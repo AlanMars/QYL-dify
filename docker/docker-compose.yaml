@@ -36,7 +36,7 @@ services:
       # The configurations of postgres database connection.
       # It is consistent with the configuration in the 'db' service below.
       DB_USERNAME: postgres
-      DB_PASSWORD: Qyla!1234567890
+      DB_PASSWORD: difyai123456
       DB_HOST: db
       DB_PORT: 5432
       DB_DATABASE: dify
@@ -45,7 +45,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_USERNAME: ''
-      REDIS_PASSWORD: Qyla!1234567890
+      REDIS_PASSWORD: difyai123456
       REDIS_USE_SSL: 'false'
       # use redis db 0 for redis cache
       REDIS_DB: 0
@@ -54,13 +54,13 @@ services:
       SESSION_REDIS_HOST: redis
       SESSION_REDIS_PORT: 6379
       SESSION_REDIS_USERNAME: ''
-      SESSION_REDIS_PASSWORD: Qyla!1234567890
+      SESSION_REDIS_PASSWORD: difyai123456
       SESSION_REDIS_USE_SSL: 'false'
       # use redis db 2 for session store
       SESSION_REDIS_DB: 2
       # The configurations of celery broker.
       # Use redis as the broker, and redis db 1 for celery broker.
-      CELERY_BROKER_URL: redis://:Qyla!1234567890@redis:6379/1
+      CELERY_BROKER_URL: redis://:difyai123456@redis:6379/1
       # Specifies the allowed origins for cross-origin requests to the Web API, e.g. https://dify.app or * for all origins.
       WEB_API_CORS_ALLOW_ORIGINS: '*'
       # Specifies the allowed origins for cross-origin requests to the console API, e.g. https://cloud.dify.ai or * for all origins.
@@ -140,7 +140,7 @@ services:
       # The configurations of postgres database connection.
       # It is consistent with the configuration in the 'db' service below.
       DB_USERNAME: postgres
-      DB_PASSWORD: Qyla!1234567890
+      DB_PASSWORD: difyai123456
       DB_HOST: db
       DB_PORT: 5432
       DB_DATABASE: dify
@@ -148,11 +148,11 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_USERNAME: ''
-      REDIS_PASSWORD: Qyla!1234567890
+      REDIS_PASSWORD: difyai123456
       REDIS_DB: 0
       REDIS_USE_SSL: 'false'
       # The configurations of celery broker.
-      CELERY_BROKER_URL: redis://:Qyla!1234567890@redis:6379/1
+      CELERY_BROKER_URL: redis://:difyai123456@redis:6379/1
       # The type of storage to use for storing user files. Supported values are `local` and `s3`, Default: `local`
       STORAGE_TYPE: local
       STORAGE_LOCAL_PATH: storage
@@ -198,7 +198,7 @@ services:
     restart: always
     environment:
       # The password for the default postgres user.
-      POSTGRES_PASSWORD: Qyla!1234567890
+      POSTGRES_PASSWORD: difyai123456
       # The name of the default postgres database.
       POSTGRES_DB: dify
       # postgres data directory
@@ -216,7 +216,7 @@ services:
       # Mount the redis data directory to the container.
       - ./volumes/redis/data:/data
     # Set the redis password when startup redis server.
-    command: redis-server --requirepass Qyla!1234567890
+    command: redis-server --requirepass difyai123456
 
   # The Weaviate vector store.
   weaviate:
