@@ -179,7 +179,8 @@ services:
     image: langgenius/dify-web:0.3.8
     restart: always
     environment:
-      EDITION: SELF_HOSTED
+      # Deployment version: SELF_HOSTED, CLOUD
+      EDITION: CLOUD
       # The base URL of console application api server, refers to the Console base URL of WEB service if console domain is
       # different from api or web app domain.
       # example: http://cloud.dify.ai
