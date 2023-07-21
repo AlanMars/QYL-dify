@@ -1,0 +1,53 @@
+[tool.poetry]
+name = "dify-api"
+version = "0.3.10"
+description = "dify-api"
+authors = ["al"]
+readme = "README.md"
+packages = [{include = "dify_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+coverage = "^7.2.4"
+beautifulsoup4 = "4.12.2"
+flask = "^2.3.2"
+Flask-SQLAlchemy = "^3.0.3"
+SQLAlchemy = "^1.4.28"
+flask-login = "0.6.2"
+flask-migrate = "^4.0.4"
+flask-restful = "0.3.9"
+flask-session2 = "1.3.1"
+flask-cors = "3.0.10"
+gunicorn = "^20.1.0"
+gevent = "^22.10.2"
+langchain = "0.0.230"
+openai = "^0.27.5"
+psycopg2-binary = "^2.9.6"
+pycryptodome = "3.17"
+python-dotenv = "1.0.0"
+pytest = "^7.3.1"
+tiktoken = "0.3.3"
+Authlib = "1.2.0"
+boto3 = "^1.26.123"
+tenacity = "8.2.2"
+cachetools = "^5.3.0"
+weaviate-client = "^3.21.0"
+qdrant_client = "^1.1.6"
+mailchimp-transactional = "^1.0.50"
+scikit-learn = "1.2.2"
+sentry-sdk = {version = "^1.21.1", extras = ["flask"]}
+jieba = "0.42.1"
+celery = "5.2.7"
+redis = "^4.5.4"
+openpyxl = "3.1.2"
+chardet = "^5.1.0"
+docx2txt = "0.8"
+pypdfium2 = "4.16.0"
+resend = "^0.5.1"
+pyjwt = "^2.6.0"
+anthropic = "^0.3.4"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
