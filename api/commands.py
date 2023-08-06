@@ -108,6 +108,34 @@ def reset_encrypt_key_pair():
                            'the asymmetric key pair of workspace {} has been reset.'.format(tenant.id), fg='green'))
 
 
+@click.command('reset-encrypt-key-pair', help='Reset the asymmetric key pair of workspace for encrypt LLM credentials. '
+                                              'After the reset, all LLM credentials will become invalid, '
+                                              'requiring re-entry.'
+                                              'Only support CLOUD mode.')
+@click.confirmation_option(prompt=click.style('Are you sure you want to reset encrypt key pair in CLOUD mode?'
+                                              ' this operation cannot be rolled back!', fg='red'))
+@click.option('--tenant-id', prompt=True, help='The tenant id.')
+def reset_encrypt_key_pair(tenant_id):
+    if current_app.config['EDITION'] == 'SELF_HOSTED':
+        click.echo(click.style('Only support CLOUD mode.', fg='red'))
+        return
+    
+    click.echo(click.style('Tenant Id: {} '.format(tenant_id), fg='green'))
+
+    tenant = db.session.query(Tenant).filter(Tenant.id == tenant_id).first()
+    if not tenant:
+        click.echo(click.style('Sorry, no workspace found. Please check tenant id.', fg='red'))
+        return
+
+    tenant.encrypt_public_key = generate_key_pair(tenant.id)
+
+    db.session.query(Provider).filter(Provider.provider_type == 'custom', Provider.tenant_id == tenant_id).delete()
+    db.session.commit()
+
+    click.echo(click.style('Congratulations! '
+                           'the asymmetric key pair of workspace {} has been reset.'.format(tenant.id), fg='green'))
+
+
 @click.command('generate-invitation-codes', help='Generate invitation codes.')
 @click.option('--batch', help='The batch of invitation codes.')
 @click.option('--count', prompt=True, help='Invitation codes count.')
