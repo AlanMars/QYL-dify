@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import Toast from '../components/base/toast'
 import Button from '@/app/components/base/button'
@@ -143,15 +142,6 @@ const InstallForm = () => {
               </Button>
             </div>
           </form>
-          <div className="block w-hull mt-2 text-xs text-gray-600">
-            {t('login.license.tip')}
-            &nbsp;
-            <Link
-              className='text-primary-600'
-              target={'_blank'}
-              href='https://docs.dify.ai/community/open-source'
-            >{t('login.license.link')}</Link>
-          </div>
         </div>
       </div>
     </>

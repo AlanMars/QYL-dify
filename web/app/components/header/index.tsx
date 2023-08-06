@@ -1,11 +1,8 @@
 import Link from 'next/link'
 import AccountDropdown from './account-dropdown'
 import AppNav from './app-nav'
-import DatasetNav from './dataset-nav'
 import EnvNav from './env-nav'
 import ExploreNav from './explore-nav'
-import GithubStar from './github-star'
-import PluginNav from './plugin-nav'
 import s from './index.module.css'
 import { WorkspaceProvider } from '@/context/workspace-context'
 
@@ -23,13 +20,15 @@ const Header = () => {
           <div className={s.logo} />
         </Link>
         {/* @ts-expect-error Async Server Component */}
-        <GithubStar />
+        {/* <GithubStar /> */}
       </div>
       <div className='flex items-center'>
         <ExploreNav className={navClassName} />
         <AppNav />
+        {/*
         <PluginNav className={navClassName} />
         <DatasetNav />
+        */}
       </div>
       <div className='flex items-center flex-shrink-0'>
         <EnvNav />
