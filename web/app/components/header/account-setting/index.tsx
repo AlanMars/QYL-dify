@@ -2,11 +2,10 @@
 import { useTranslation } from 'react-i18next'
 import { useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
-import { AtSymbolIcon, CubeTransparentIcon, GlobeAltIcon, UserIcon, UsersIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { CubeTransparentIcon, GlobeAltIcon, UserIcon, UsersIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { GlobeAltIcon as GlobalAltIconSolid, UserIcon as UserIconSolid, UsersIcon as UsersIconSolid } from '@heroicons/react/24/solid'
 import AccountPage from './account-page'
 import MembersPage from './members-page'
-import IntegrationsPage from './Integrations-page'
 import LanguagePage from './language-page'
 import ProviderPage from './provider-page'
 import DataSourcePage from './data-source-page'
@@ -44,12 +43,14 @@ export default function AccountSetting({
           icon: <UserIcon className={iconClassName} />,
           activeIcon: <UserIconSolid className={iconClassName} />,
         },
+        /*
         {
           key: 'integrations',
           name: t('common.settings.integrations'),
           icon: <AtSymbolIcon className={iconClassName} />,
           activeIcon: <AtSymbolIcon className={iconClassName} />,
         },
+        */
         {
           key: 'language',
           name: t('common.settings.language'),
@@ -144,7 +145,7 @@ export default function AccountSetting({
           <div className='px-6'>
             {activeMenu === 'account' && <AccountPage />}
             {activeMenu === 'members' && <MembersPage />}
-            {activeMenu === 'integrations' && <IntegrationsPage />}
+            {/* activeMenu === 'integrations' && <IntegrationsPage /> */}
             {activeMenu === 'language' && <LanguagePage />}
             {activeMenu === 'provider' && <ProviderPage />}
             {activeMenu === 'data-source' && <DataSourcePage />}

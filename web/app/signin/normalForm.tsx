@@ -3,7 +3,6 @@ import React, { useEffect, useReducer, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'next/navigation'
 import useSWR from 'swr'
-import Link from 'next/link'
 import Toast from '../components/base/toast'
 // import Tooltip from '@/app/components/base/tooltip/index'
 import { IS_CE_EDITION } from '@/config'
@@ -218,6 +217,7 @@ const NormalForm = () => {
             </>
           }
           {/*  agree to our Terms and Privacy Policy. */}
+          {/*
           <div className="w-hull text-center block mt-2 text-xs text-gray-600">
             {t('login.tosDesc')}
             &nbsp;
@@ -233,6 +233,7 @@ const NormalForm = () => {
               href='https://docs.dify.ai/user-agreement/privacy-policy'
             >{t('login.pp')}</Link>
           </div>
+        */}
 
         </div>
       </div>

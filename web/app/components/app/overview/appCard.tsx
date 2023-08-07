@@ -187,7 +187,7 @@ function AppCard({
               onClick={onClickCustomize}
             >
               <SparklesIcon className="w-4 h-4 mr-1" />
-              {t('appOverview.overview.appInfo.customize.entry')}
+              {/* t('appOverview.overview.appInfo.customize.entry') */}
             </div>
           </div>
         )

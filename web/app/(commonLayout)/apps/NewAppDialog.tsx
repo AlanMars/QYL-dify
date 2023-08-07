@@ -175,9 +175,11 @@ const NewAppDialog = ({ show, onSuccess, onClose }: NewAppDialogProps) => {
                     </div>
                   </div>
                   <div className={style.listItemDescription}>{t('app.newApp.chatAppIntro')}</div>
-                  <div className={classNames(style.listItemFooter, 'justify-end')}>
-                    <a className={style.listItemLink} href='https://udify.app/chat/7CQBa5yyvYLSkZtx' target='_blank'>{t('app.newApp.previewDemo')}<span className={classNames(style.linkIcon, style.grayLinkIcon)} /></a>
-                  </div>
+                  {/*
+                    <div className={classNames(style.listItemFooter, 'justify-end')}>
+                      <a className={style.listItemLink} href='https://udify.app/chat/7CQBa5yyvYLSkZtx' target='_blank'>{t('app.newApp.previewDemo')}<span className={classNames(style.linkIcon, style.grayLinkIcon)} /></a>
+                    </div>
+                  */}
                 </li>
                 <li
                   className={classNames(style.listItem, style.selectable, newAppMode === 'completion' && style.selected)}
@@ -192,9 +194,11 @@ const NewAppDialog = ({ show, onSuccess, onClose }: NewAppDialogProps) => {
                     </div>
                   </div>
                   <div className={style.listItemDescription}>{t('app.newApp.completeAppIntro')}</div>
-                  <div className={classNames(style.listItemFooter, 'justify-end')}>
-                    <a className={style.listItemLink} href='https://udify.app/completion/aeFTj0VCb3Ok3TUE' target='_blank'>{t('app.newApp.previewDemo')}<span className={classNames(style.linkIcon, style.grayLinkIcon)} /></a>
-                  </div>
+                  {/*
+                    <div className={classNames(style.listItemFooter, 'justify-end')}>
+                      <a className={style.listItemLink} href='https://udify.app/completion/aeFTj0VCb3Ok3TUE' target='_blank'>{t('app.newApp.previewDemo')}<span className={classNames(style.linkIcon, style.grayLinkIcon)} /></a>
+                    </div>
+                  */}
                 </li>
               </ul>
               <div className='flex items-center h-[34px] mt-2'>
