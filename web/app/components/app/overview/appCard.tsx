@@ -7,7 +7,6 @@ import {
   RocketLaunchIcon,
   ShareIcon,
 } from '@heroicons/react/24/outline'
-import { SparklesIcon } from '@heroicons/react/24/solid'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
 import SettingsModal from './settings'
@@ -186,7 +185,7 @@ function AppCard({
               className="flex items-center hover:text-primary-600 hover:cursor-pointer"
               onClick={onClickCustomize}
             >
-              <SparklesIcon className="w-4 h-4 mr-1" />
+              {/* <SparklesIcon className="w-4 h-4 mr-1" /> */}
               {/* t('appOverview.overview.appInfo.customize.entry') */}
             </div>
           </div>
