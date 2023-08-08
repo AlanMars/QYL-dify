@@ -137,7 +137,7 @@ export default function AccountPage() {
         <div className={titleClassName}>{t('common.account.email')}</div>
         <div className={classNames(inputClassName, 'cursor-pointer')}>{userProfile.email}</div>
       </div>
-      {IS_CE_EDITION && (
+      {!IS_CE_EDITION && (
         <div className='mb-8'>
           <div className='mb-1 text-sm font-medium text-gray-900'>{t('common.account.password')}</div>
           <div className='mb-2 text-xs text-gray-500'>{t('common.account.passwordTip')}</div>
