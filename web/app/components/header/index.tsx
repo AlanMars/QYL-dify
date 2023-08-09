@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import AccountDropdown from './account-dropdown'
 import AppNav from './app-nav'
+import DatasetNav from './dataset-nav'
 import EnvNav from './env-nav'
 import ExploreNav from './explore-nav'
 import s from './index.module.css'
@@ -27,8 +28,8 @@ const Header = () => {
         <AppNav />
         {/*
         <PluginNav className={navClassName} />
-        <DatasetNav />
         */}
+        <DatasetNav />
       </div>
       <div className='flex items-center flex-shrink-0'>
         <EnvNav />
