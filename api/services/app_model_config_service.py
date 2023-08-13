@@ -1,35 +1,15 @@
 import re
 import uuid
 
-from core.constant import llm_constant
+from core.agent.agent_executor import PlanningStrategy
+from core.model_providers.model_provider_factory import ModelProviderFactory
+from core.model_providers.models.entity.model_params import ModelType
 from models.account import Account
 from services.dataset_service import DatasetService
-from core.llm.llm_builder import LLMBuilder
 
-MODEL_PROVIDERS = [
-    'openai',
-    'anthropic',
-]
 
-MODELS_BY_APP_MODE = {
-    'chat': [
-        'claude-instant-1',
-        'claude-2',
-        'gpt-4',
-        'gpt-4-32k',
-        'gpt-3.5-turbo',
-        'gpt-3.5-turbo-16k',
-    ],
-    'completion': [
-        'claude-instant-1',
-        'claude-2',
-        'gpt-4',
-        'gpt-4-32k',
-        'gpt-3.5-turbo',
-        'gpt-3.5-turbo-16k',
-        'text-davinci-003',
-    ]
-}
+SUPPORT_TOOLS = ["dataset", "google_search", "web_reader", "wikipedia", "current_datetime"]
+
 
 class AppModelConfigService:
     @staticmethod
@@ -54,39 +34,40 @@ class AppModelConfigService:
         # max_tokens
         if 'max_tokens' not in cp:
             cp["max_tokens"] = 512
-
-        if not isinstance(cp["max_tokens"], int) or cp["max_tokens"] <= 0 or cp["max_tokens"] > \
-                llm_constant.max_context_token_length[model_name]:
-            raise ValueError(
-                "max_tokens must be an integer greater than 0 and not exceeding the maximum value of the corresponding model")
-
+        #
+        # if not isinstance(cp["max_tokens"], int) or cp["max_tokens"] <= 0 or cp["max_tokens"] > \
+        #         llm_constant.max_context_token_length[model_name]:
+        #     raise ValueError(
+        #         "max_tokens must be an integer greater than 0 "
+        #         "and not exceeding the maximum value of the corresponding model")
+        #
         # temperature
         if 'temperature' not in cp:
             cp["temperature"] = 1
-
-        if not isinstance(cp["temperature"], (float, int)) or cp["temperature"] < 0 or cp["temperature"] > 2:
-            raise ValueError("temperature must be a float between 0 and 2")
-
+        #
+        # if not isinstance(cp["temperature"], (float, int)) or cp["temperature"] < 0 or cp["temperature"] > 2:
+        #     raise ValueError("temperature must be a float between 0 and 2")
+        #
         # top_p
         if 'top_p' not in cp:
             cp["top_p"] = 1
 
-        if not isinstance(cp["top_p"], (float, int)) or cp["top_p"] < 0 or cp["top_p"] > 2:
-            raise ValueError("top_p must be a float between 0 and 2")
-
+        # if not isinstance(cp["top_p"], (float, int)) or cp["top_p"] < 0 or cp["top_p"] > 2:
+        #     raise ValueError("top_p must be a float between 0 and 2")
+        #
         # presence_penalty
         if 'presence_penalty' not in cp:
             cp["presence_penalty"] = 0
 
-        if not isinstance(cp["presence_penalty"], (float, int)) or cp["presence_penalty"] < -2 or cp["presence_penalty"] > 2:
-            raise ValueError("presence_penalty must be a float between -2 and 2")
-
+        # if not isinstance(cp["presence_penalty"], (float, int)) or cp["presence_penalty"] < -2 or cp["presence_penalty"] > 2:
+        #     raise ValueError("presence_penalty must be a float between -2 and 2")
+        #
         # presence_penalty
         if 'frequency_penalty' not in cp:
             cp["frequency_penalty"] = 0
 
-        if not isinstance(cp["frequency_penalty"], (float, int)) or cp["frequency_penalty"] < -2 or cp["frequency_penalty"] > 2:
-            raise ValueError("frequency_penalty must be a float between -2 and 2")
+        # if not isinstance(cp["frequency_penalty"], (float, int)) or cp["frequency_penalty"] < -2 or cp["frequency_penalty"] > 2:
+        #     raise ValueError("frequency_penalty must be a float between -2 and 2")
 
         # Filter out extra parameters
         filtered_cp = {
@@ -100,7 +81,7 @@ class AppModelConfigService:
         return filtered_cp
 
     @staticmethod
-    def validate_configuration(account: Account, config: dict, mode: str) -> dict:
+    def validate_configuration(tenant_id: str, account: Account, config: dict) -> dict:
         # opening_statement
         if 'opening_statement' not in config or not config["opening_statement"]:
             config["opening_statement"] = ""
@@ -148,11 +129,6 @@ class AppModelConfigService:
 
         if not isinstance(config["speech_to_text"]["enabled"], bool):
             raise ValueError("enabled in speech_to_text must be of boolean type")
-        
-        provider_name = LLMBuilder.get_default_provider(account.current_tenant_id, 'whisper-1')
-
-        if config["speech_to_text"]["enabled"] and provider_name != 'openai':
-            raise ValueError("provider not support speech to text")
 
         # more_like_this
         if 'more_like_this' not in config or not config["more_like_this"]:
@@ -169,6 +145,33 @@ class AppModelConfigService:
         if not isinstance(config["more_like_this"]["enabled"], bool):
             raise ValueError("enabled in more_like_this must be of boolean type")
 
+        # sensitive_word_avoidance
+        if 'sensitive_word_avoidance' not in config or not config["sensitive_word_avoidance"]:
+            config["sensitive_word_avoidance"] = {
+                "enabled": False
+            }
+
+        if not isinstance(config["sensitive_word_avoidance"], dict):
+            raise ValueError("sensitive_word_avoidance must be of dict type")
+
+        if "enabled" not in config["sensitive_word_avoidance"] or not config["sensitive_word_avoidance"]["enabled"]:
+            config["sensitive_word_avoidance"]["enabled"] = False
+
+        if not isinstance(config["sensitive_word_avoidance"]["enabled"], bool):
+            raise ValueError("enabled in sensitive_word_avoidance must be of boolean type")
+
+        if "words" not in config["sensitive_word_avoidance"] or not config["sensitive_word_avoidance"]["words"]:
+            config["sensitive_word_avoidance"]["words"] = ""
+
+        if not isinstance(config["sensitive_word_avoidance"]["words"], str):
+            raise ValueError("words in sensitive_word_avoidance must be of string type")
+
+        if "canned_response" not in config["sensitive_word_avoidance"] or not config["sensitive_word_avoidance"]["canned_response"]:
+            config["sensitive_word_avoidance"]["canned_response"] = ""
+
+        if not isinstance(config["sensitive_word_avoidance"]["canned_response"], str):
+            raise ValueError("canned_response in sensitive_word_avoidance must be of string type")
+
         # model
         if 'model' not in config:
             raise ValueError("model is required")
@@ -177,14 +180,21 @@ class AppModelConfigService:
             raise ValueError("model must be of object type")
 
         # model.provider
-        if 'provider' not in config["model"] or config["model"]["provider"] not in MODEL_PROVIDERS:
-            raise ValueError(f"model.provider is required and must be in {str(MODEL_PROVIDERS)}")
+        model_provider_names = ModelProviderFactory.get_provider_names()
+        if 'provider' not in config["model"] or config["model"]["provider"] not in model_provider_names:
+            raise ValueError(f"model.provider is required and must be in {str(model_provider_names)}")
 
         # model.name
         if 'name' not in config["model"]:
             raise ValueError("model.name is required")
 
-        if config["model"]["name"] not in MODELS_BY_APP_MODE[mode]:
+        model_provider = ModelProviderFactory.get_preferred_model_provider(tenant_id, config["model"]["provider"])
+        if not model_provider:
+            raise ValueError("model.name must be in the specified model list")
+
+        model_list = model_provider.get_supported_model_list(ModelType.TEXT_GENERATION)
+        model_ids = [m['id'] for m in model_list]
+        if config["model"]["name"] not in model_ids:
             raise ValueError("model.name must be in the specified model list")
 
         # model.completion_params
@@ -274,6 +284,12 @@ class AppModelConfigService:
         if not isinstance(config["agent_mode"]["enabled"], bool):
             raise ValueError("enabled in agent_mode must be of boolean type")
 
+        if "strategy" not in config["agent_mode"] or not config["agent_mode"]["strategy"]:
+            config["agent_mode"]["strategy"] = PlanningStrategy.ROUTER.value
+
+        if config["agent_mode"]["strategy"] not in [member.value for member in list(PlanningStrategy.__members__.values())]:
+            raise ValueError("strategy in agent_mode must be in the specified strategy list")
+
         if "tools" not in config["agent_mode"] or not config["agent_mode"]["tools"]:
             config["agent_mode"]["tools"] = []
 
@@ -282,8 +298,8 @@ class AppModelConfigService:
 
         for tool in config["agent_mode"]["tools"]:
             key = list(tool.keys())[0]
-            if key not in ["sensitive-word-avoidance", "dataset"]:
-                raise ValueError("Keys in agent_mode.tools list can only be 'sensitive-word-avoidance' or 'dataset'")
+            if key not in SUPPORT_TOOLS:
+                raise ValueError("Keys in agent_mode.tools must be in the specified tool list")
 
             tool_item = tool[key]
 
@@ -293,19 +309,7 @@ class AppModelConfigService:
             if not isinstance(tool_item["enabled"], bool):
                 raise ValueError("enabled in agent_mode.tools must be of boolean type")
 
-            if key == "sensitive-word-avoidance":
-                if "words" not in tool_item or not tool_item["words"]:
-                    tool_item["words"] = ""
-
-                if not isinstance(tool_item["words"], str):
-                    raise ValueError("words in sensitive-word-avoidance must be of string type")
-
-                if "canned_response" not in tool_item or not tool_item["canned_response"]:
-                    tool_item["canned_response"] = ""
-
-                if not isinstance(tool_item["canned_response"], str):
-                    raise ValueError("canned_response in sensitive-word-avoidance must be of string type")
-            elif key == "dataset":
+            if key == "dataset":
                 if 'id' not in tool_item:
                     raise ValueError("id is required in dataset")
 
@@ -324,6 +328,7 @@ class AppModelConfigService:
             "suggested_questions_after_answer": config["suggested_questions_after_answer"],
             "speech_to_text": config["speech_to_text"],
             "more_like_this": config["more_like_this"],
+            "sensitive_word_avoidance": config["sensitive_word_avoidance"],
             "model": {
                 "provider": config["model"]["provider"],
                 "name": config["model"]["name"],

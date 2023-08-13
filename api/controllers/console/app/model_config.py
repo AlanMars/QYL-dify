@@ -28,9 +28,9 @@ class ModelConfigResource(Resource):
 
         # validate config
         model_configuration = AppModelConfigService.validate_configuration(
+            tenant_id=current_user.current_tenant_id,
             account=current_user,
-            config=request.json,
-            mode=app_model.mode
+            config=request.json
         )
 
         new_app_model_config = AppModelConfig(
@@ -43,6 +43,7 @@ class ModelConfigResource(Resource):
             suggested_questions_after_answer=json.dumps(model_configuration['suggested_questions_after_answer']),
             speech_to_text=json.dumps(model_configuration['speech_to_text']),
             more_like_this=json.dumps(model_configuration['more_like_this']),
+            sensitive_word_avoidance=json.dumps(model_configuration['sensitive_word_avoidance']),
             model=json.dumps(model_configuration['model']),
             user_input_form=json.dumps(model_configuration['user_input_form']),
             pre_prompt=model_configuration['pre_prompt'],

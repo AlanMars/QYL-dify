@@ -4,6 +4,8 @@ from flask_restful import marshal_with, fields
 from controllers.web import api
 from controllers.web.wraps import WebApiResource
 
+from models.model import App
+
 
 class AppParameterApi(WebApiResource):
     """Resource for app variables."""
@@ -27,7 +29,7 @@ class AppParameterApi(WebApiResource):
     }
 
     @marshal_with(parameters_fields)
-    def get(self, app_model, end_user):
+    def get(self, app_model: App, end_user):
         """Retrieve app parameters."""
         app_model_config = app_model.app_model_config
 

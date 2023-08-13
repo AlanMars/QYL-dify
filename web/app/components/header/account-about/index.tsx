@@ -2,11 +2,13 @@
 import { useTranslation } from 'react-i18next'
 import classNames from 'classnames'
 import Link from 'next/link'
+import { useContext } from 'use-context-selector'
 import s from './index.module.css'
 import Modal from '@/app/components/base/modal'
 import { XClose } from '@/app/components/base/icons/src/vender/line/general'
 import type { LangGeniusVersionResponse } from '@/models/common'
 import { IS_CE_EDITION } from '@/config'
+import I18n from '@/context/i18n'
 
 type IAccountSettingProps = {
   langeniusVersionInfo: LangGeniusVersionResponse
@@ -21,6 +23,7 @@ export default function AccountAbout({
   onCancel,
 }: IAccountSettingProps) {
   const { t } = useTranslation()
+  const { locale } = useContext(I18n)
   const isLatest = langeniusVersionInfo.current_version === langeniusVersionInfo.latest_version
 
   return (

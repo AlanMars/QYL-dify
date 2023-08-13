@@ -18,7 +18,9 @@ from controllers.console.datasets.error import DocumentAlreadyFinishedError, Inv
 from controllers.console.setup import setup_required
 from controllers.console.wraps import account_initialization_required
 from core.indexing_runner import IndexingRunner
-from core.llm.error import ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError
+from core.model_providers.error import ProviderTokenNotInitError, QuotaExceededError, ModelCurrentlyNotSupportError, \
+    LLMBadRequestError
+from core.model_providers.model_factory import ModelFactory
 from extensions.ext_redis import redis_client
 from libs.helper import TimestampField
 from extensions.ext_database import db
@@ -60,6 +62,7 @@ document_fields = {
     'display_status': fields.String,
     'word_count': fields.Integer,
     'hit_count': fields.Integer,
+    'doc_form': fields.String,
 }
 
 document_with_segments_fields = {
@@ -85,6 +88,7 @@ document_with_segments_fields = {
     'completed_segments': fields.Integer,
     'total_segments': fields.Integer
 }
+
 
 class DocumentResource(Resource):
     def get_document(self, dataset_id: str, document_id: str) -> Document:
@@ -269,6 +273,7 @@ class DatasetDocumentListApi(Resource):
         parser.add_argument('process_rule', type=dict, required=False, location='json')
         parser.add_argument('duplicate', type=bool, nullable=False, location='json')
         parser.add_argument('original_document_id', type=str, required=False, location='json')
+        parser.add_argument('doc_form', type=str, default='text_model', required=False, nullable=False, location='json')
         args = parser.parse_args()
 
         if not dataset.indexing_technique and not args['indexing_technique']:
@@ -276,6 +281,15 @@ class DatasetDocumentListApi(Resource):
 
         # validate args
         DocumentService.document_create_args_validate(args)
+
+        try:
+            ModelFactory.get_embedding_model(
+                tenant_id=current_user.current_tenant_id
+            )
+        except LLMBadRequestError:
+            raise ProviderNotInitializeError(
+                f"No Embedding Model available. Please configure a valid provider "
+                f"in the Settings -> Model Provider.")
 
         try:
             documents, batch = DocumentService.save_document_with_dataset_id(dataset, args, current_user)
@@ -313,7 +327,17 @@ class DatasetInitApi(Resource):
                             nullable=False, location='json')
         parser.add_argument('data_source', type=dict, required=True, nullable=True, location='json')
         parser.add_argument('process_rule', type=dict, required=True, nullable=True, location='json')
+        parser.add_argument('doc_form', type=str, default='text_model', required=False, nullable=False, location='json')
         args = parser.parse_args()
+
+        try:
+            ModelFactory.get_embedding_model(
+                tenant_id=current_user.current_tenant_id
+            )
+        except LLMBadRequestError:
+            raise ProviderNotInitializeError(
+                f"No Embedding Model available. Please configure a valid provider "
+                f"in the Settings -> Model Provider.")
 
         # validate args
         DocumentService.document_create_args_validate(args)
@@ -380,7 +404,13 @@ class DocumentIndexingEstimateApi(DocumentResource):
 
                 indexing_runner = IndexingRunner()
 
-                response = indexing_runner.file_indexing_estimate([file], data_process_rule_dict)
+                try:
+                    response = indexing_runner.file_indexing_estimate(current_user.current_tenant_id, [file],
+                                                                      data_process_rule_dict)
+                except LLMBadRequestError:
+                    raise ProviderNotInitializeError(
+                        f"No Embedding Model available. Please configure a valid provider "
+                        f"in the Settings -> Model Provider.")
 
         return response
 
@@ -441,12 +471,24 @@ class DocumentBatchIndexingEstimateApi(DocumentResource):
                 raise NotFound("File not found.")
 
             indexing_runner = IndexingRunner()
-            response = indexing_runner.file_indexing_estimate(file_details, data_process_rule_dict)
+            try:
+                response = indexing_runner.file_indexing_estimate(current_user.current_tenant_id, file_details,
+                                                                  data_process_rule_dict)
+            except LLMBadRequestError:
+                raise ProviderNotInitializeError(
+                    f"No Embedding Model available. Please configure a valid provider "
+                    f"in the Settings -> Model Provider.")
         elif dataset.data_source_type:
 
             indexing_runner = IndexingRunner()
-            response = indexing_runner.notion_indexing_estimate(info_list,
-                                                                data_process_rule_dict)
+            try:
+                response = indexing_runner.notion_indexing_estimate(current_user.current_tenant_id,
+                                                                    info_list,
+                                                                    data_process_rule_dict)
+            except LLMBadRequestError:
+                raise ProviderNotInitializeError(
+                    f"No Embedding Model available. Please configure a valid provider "
+                    f"in the Settings -> Model Provider.")
         else:
             raise ValueError('Data source type not support')
         return response
@@ -488,6 +530,8 @@ class DocumentBatchIndexingStatusApi(DocumentResource):
                                                           DocumentSegment.status != 're_segment').count()
             document.completed_segments = completed_segments
             document.total_segments = total_segments
+            if document.is_paused:
+                document.indexing_status = 'paused'
             documents_status.append(marshal(document, self.document_status_fields))
         data = {
             'data': documents_status
@@ -583,7 +627,8 @@ class DocumentDetailApi(DocumentResource):
                 'segment_count': document.segment_count,
                 'average_segment_length': document.average_segment_length,
                 'hit_count': document.hit_count,
-                'display_status': document.display_status
+                'display_status': document.display_status,
+                'doc_form': document.doc_form
             }
         else:
             process_rules = DatasetService.get_process_rules(dataset_id)
@@ -614,7 +659,8 @@ class DocumentDetailApi(DocumentResource):
                 'segment_count': document.segment_count,
                 'average_segment_length': document.average_segment_length,
                 'hit_count': document.hit_count,
-                'display_status': document.display_status
+                'display_status': document.display_status,
+                'doc_form': document.doc_form
             }
 
         return response, 200

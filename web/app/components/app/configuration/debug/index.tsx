@@ -12,7 +12,7 @@ import FormattingChanged from '../base/warning-mask/formatting-changed'
 import GroupName from '../base/group-name'
 import { AppType } from '@/types/app'
 import PromptValuePanel, { replaceStringWithValues } from '@/app/components/app/configuration/prompt-value-panel'
-import type { IChatItem } from '@/app/components/app/chat'
+import type { IChatItem } from '@/app/components/app/chat/type'
 import Chat from '@/app/components/app/chat'
 import ConfigContext from '@/context/debug-configuration'
 import { ToastContext } from '@/app/components/base/toast'
@@ -22,6 +22,7 @@ import type { ModelConfig as BackendModelConfig } from '@/types/app'
 import { promptVariablesToUserInputsForm } from '@/utils/model-config'
 import TextGeneration from '@/app/components/app/text-generate/item'
 import { IS_CE_EDITION } from '@/config'
+import { useProviderContext } from '@/context/provider-context'
 
 type IDebug = {
   hasSetAPIKEY: boolean
@@ -51,7 +52,7 @@ const Debug: FC<IDebug> = ({
     modelConfig,
     completionParams,
   } = useContext(ConfigContext)
-
+  const { currentProvider } = useProviderContext()
   const [chatList, setChatList, getChatList] = useGetState<IChatItem[]>([])
   const chatListDomRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -389,7 +390,7 @@ const Debug: FC<IDebug> = ({
                   }}
                   isShowSuggestion={doShowSuggestion}
                   suggestionList={suggestQuestions}
-                  isShowSpeechToText={speechToTextConfig.enabled}
+                  isShowSpeechToText={speechToTextConfig.enabled && currentProvider?.provider_name === 'openai'}
                 />
               </div>
             </div>

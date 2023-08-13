@@ -4,6 +4,8 @@ from flask_restful import marshal_with, fields
 from controllers.console import api
 from controllers.console.explore.wraps import InstalledAppResource
 
+from models.model import InstalledApp
+
 
 class AppParameterApi(InstalledAppResource):
     """Resource for app variables."""
@@ -27,7 +29,7 @@ class AppParameterApi(InstalledAppResource):
     }
 
     @marshal_with(parameters_fields)
-    def get(self, installed_app):
+    def get(self, installed_app: InstalledApp):
         """Retrieve app parameters."""
         app_model = installed_app.app
         app_model_config = app_model.app_model_config
