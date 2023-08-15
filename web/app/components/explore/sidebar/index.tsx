@@ -94,6 +94,7 @@ const SideBar: FC<{
           {isDiscoverySelected ? <SelectedDiscoveryIcon /> : <DiscoveryIcon />}
           <div className='text-sm'>{t('explore.sidebar.discovery')}</div>
         </Link>
+        {/*
         <Link
           href='/explore/chat'
           className={cn(isChatSelected ? 'text-primary-600  bg-white font-semibold' : 'text-gray-700 font-medium', 'flex items-center h-9 pl-3 space-x-2 rounded-lg')}
@@ -102,6 +103,7 @@ const SideBar: FC<{
           {isChatSelected ? <SelectedChatIcon /> : <ChatIcon />}
           <div className='text-sm'>{t('explore.sidebar.chat')}</div>
         </Link>
+        */}
       </div>
       {installedApps.length > 0 && (
         <div className='mt-10'>

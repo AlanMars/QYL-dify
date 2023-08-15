@@ -36,7 +36,7 @@ const translation = {
     HR: 'HR',
   },
   universalChat: {
-    welcome: 'Start chat with Dify',
+    welcome: 'Start chat with RACIO',
     welcomeDescribe: 'Your AI conversation companion for personalized assistance',
     model: 'Model',
     plugins: {
