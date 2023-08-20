@@ -2,7 +2,7 @@ const translation = {
   title: '我的应用',
   sidebar: {
     discovery: '发现',
-    chat: '智聊',
+    chat: 'RACIO 智人',
     workspace: '工作区',
     action: {
       pin: '置顶',

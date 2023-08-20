@@ -2,7 +2,7 @@ const translation = {
   title: 'My Apps',
   sidebar: {
     discovery: 'Discovery',
-    chat: 'Chat',
+    chat: 'RACIO',
     workspace: 'Workspace',
     action: {
       pin: 'Pin',
