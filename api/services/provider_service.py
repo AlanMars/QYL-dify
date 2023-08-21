@@ -1,7 +1,11 @@
 import datetime
 import json
+import logging
+import os
 from collections import defaultdict
 from typing import Optional
+
+import requests
 
 from core.model_providers.model_factory import ModelFactory
 from extensions.ext_database import db
@@ -23,6 +27,14 @@ class ProviderService:
         # get rules for all providers
         model_provider_rules = ModelProviderFactory.get_provider_rules()
         model_provider_names = [model_provider_name for model_provider_name, _ in model_provider_rules.items()]
+
+        for model_provider_name, model_provider_rule in model_provider_rules.items():
+            if ProviderType.SYSTEM.value in model_provider_rule['support_provider_types'] \
+                    and 'system_config' in model_provider_rule and model_provider_rule['system_config'] \
+                    and 'supported_quota_types' in model_provider_rule['system_config'] \
+                    and 'trial' in model_provider_rule['system_config']['supported_quota_types']:
+                ModelProviderFactory.get_preferred_model_provider(tenant_id, model_provider_name)
+
         configurable_model_provider_names = [
             model_provider_name
             for model_provider_name, model_provider_rules in model_provider_rules.items()
@@ -121,12 +133,14 @@ class ProviderService:
                         provider_parameter_dict[key]['is_valid'] = provider.is_valid
                         provider_parameter_dict[key]['quota_used'] = provider.quota_used
                         provider_parameter_dict[key]['quota_limit'] = provider.quota_limit
-                        provider_parameter_dict[key]['last_used'] = provider.last_used
+                        provider_parameter_dict[key]['last_used'] = int(provider.last_used.timestamp()) \
+                            if provider.last_used else None
                 elif provider.provider_type == ProviderType.CUSTOM.value \
                         and ProviderType.CUSTOM.value in provider_parameter_dict:
                     # if custom
                     key = ProviderType.CUSTOM.value
-                    provider_parameter_dict[key]['last_used'] = provider.last_used
+                    provider_parameter_dict[key]['last_used'] = int(provider.last_used.timestamp()) \
+                            if provider.last_used else None
                     provider_parameter_dict[key]['is_valid'] = provider.is_valid
 
                     if model_provider_rule['model_flexibility'] == 'fixed':
@@ -459,6 +473,7 @@ class ProviderService:
             for model in model_list:
                 valid_model_dict = {
                     "model_name": model['id'],
+                    "model_display_name": model['name'],
                     "model_type": model_type,
                     "model_provider": {
                         "provider_name": provider.provider_name,
@@ -501,3 +516,33 @@ class ProviderService:
         # get model parameter rules
         return model_provider.get_model_parameter_rules(model_name, ModelType.value_of(model_type))
 
+    def free_quota_submit(self, tenant_id: str, provider_name: str):
+        api_key = os.environ.get("FREE_QUOTA_APPLY_API_KEY")
+        api_url = os.environ.get("FREE_QUOTA_APPLY_URL")
+
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f"Bearer {api_key}"
+        }
+        response = requests.post(api_url, headers=headers, json={'workspace_id': tenant_id, 'provider_name': provider_name})
+        if not response.ok:
+            logging.error(f"Request FREE QUOTA APPLY SERVER Error: {response.status_code} ")
+            raise ValueError(f"Error: {response.status_code} ")
+
+        if response.json()["code"] != 'success':
+            raise ValueError(
+                f"error: {response.json()['message']}"
+            )
+
+        rst = response.json()
+
+        if rst['type'] == 'redirect':
+            return {
+                'type': rst['type'],
+                'redirect_url': rst['redirect_url']
+            }
+        else:
+            return {
+                'type': rst['type'],
+                'result': 'success'
+            }

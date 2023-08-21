@@ -2,6 +2,8 @@ import type { Fetcher } from 'swr'
 import { del, get, patch, post, put } from './base'
 import type {
   AccountIntegrate, CommonResponse, DataSourceNotion,
+  FileUploadConfigResponse,
+  ICurrentWorkspace,
   IWorkspace, LangGeniusVersionResponse, Member,
   OauthResponse, PluginProvider, Provider, ProviderAnthropicToken, ProviderAzureToken,
   SetupStatusResponse, TenantInfoResponse, UserProfileOriginResponse,
@@ -87,6 +89,10 @@ export const fetchFilePreview: Fetcher<{ content: string }, { fileID: string }> 
   return get(`/files/${fileID}/preview`) as Promise<{ content: string }>
 }
 
+export const fetchCurrentWorkspace: Fetcher<ICurrentWorkspace, { url: string; params: Record<string, any> }> = ({ url, params }) => {
+  return get(url, { params }) as Promise<ICurrentWorkspace>
+}
+
 export const fetchWorkspaces: Fetcher<{ workspaces: IWorkspace[] }, { url: string; params: Record<string, any> }> = ({ url, params }) => {
   return get(url, { params }) as Promise<{ workspaces: IWorkspace[] }>
 }
@@ -168,4 +174,12 @@ export const fetchDefaultModal: Fetcher<BackendModel, string> = (url) => {
 
 export const updateDefaultModel: Fetcher<CommonResponse, { url: string; body: any }> = ({ url, body }) => {
   return post(url, { body }) as Promise<CommonResponse>
+}
+
+export const submitFreeQuota: Fetcher<{ type: string; redirect_url?: string; result?: string }, string> = (url) => {
+  return post(url) as Promise<{ type: string; redirect_url?: string; result?: string }>
+}
+
+export const fetchFileUploadConfig: Fetcher<FileUploadConfigResponse, { url: string }> = ({ url }) => {
+  return get(url) as Promise<FileUploadConfigResponse>
 }

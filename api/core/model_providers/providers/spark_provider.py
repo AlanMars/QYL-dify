@@ -3,7 +3,6 @@ import logging
 from json import JSONDecodeError
 from typing import Type
 
-from flask import current_app
 from langchain.schema import HumanMessage
 
 from core.helper import encrypter
@@ -30,7 +29,11 @@ class SparkProvider(BaseModelProvider):
             return [
                 {
                     'id': 'spark',
-                    'name': '星火认知大模型',
+                    'name': 'Spark V1.5',
+                },
+                {
+                    'id': 'spark-v2',
+                    'name': 'Spark V2.0',
                 }
             ]
         else:

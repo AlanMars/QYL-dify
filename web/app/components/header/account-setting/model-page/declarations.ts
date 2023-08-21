@@ -70,10 +70,15 @@ export enum ModelFeature {
 // backend defined model struct: /console/api/workspaces/current/models/model-type/:model_type
 export type BackendModel = {
   model_name: string
+  model_display_name: string // not always exist
   model_type: ModelType
   model_provider: {
     provider_name: ProviderEnum
     provider_type: PreferredProviderTypeEnum
+    quota_type: 'trial' | 'paid'
+    quota_unit: 'times' | 'tokens'
+    quota_used: number
+    quota_limit: number
   }
   features: ModelFeature[]
 }

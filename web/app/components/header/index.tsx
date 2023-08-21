@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import AccountDropdown from './account-dropdown'
 import AppNav from './app-nav'
@@ -6,6 +8,7 @@ import EnvNav from './env-nav'
 import ExploreNav from './explore-nav'
 import s from './index.module.css'
 import { WorkspaceProvider } from '@/context/workspace-context'
+import { useAppContext } from '@/context/app-context'
 
 const navClassName = `
   flex items-center relative mr-3 px-3 h-8 rounded-xl
@@ -14,6 +17,7 @@ const navClassName = `
 `
 
 const Header = () => {
+  const { isCurrentWorkspaceManager } = useAppContext()
   return (
     <>
       <div className='flex items-center'>
@@ -29,7 +33,7 @@ const Header = () => {
         {/*
         <PluginNav className={navClassName} />
         */}
-        <DatasetNav />
+        {isCurrentWorkspaceManager && <DatasetNav />}
       </div>
       <div className='flex items-center flex-shrink-0'>
         <EnvNav />

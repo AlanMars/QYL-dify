@@ -25,12 +25,16 @@ class ChatSpark(BaseChatModel):
         .. code-block:: python
 
         client = SparkLLMClient(
+            model_name="<model_name>",
             app_id="<app_id>",
             api_key="<api_key>",
             api_secret="<api_secret>"
         )
     """
     client: Any = None  #: :meta private:
+
+    model_name: str = "spark"
+    """The Spark model name."""
 
     max_tokens: int = 256
     """Denotes the number of tokens to predict per generation."""
@@ -50,6 +54,7 @@ class ChatSpark(BaseChatModel):
     app_id: Optional[str] = None
     api_key: Optional[str] = None
     api_secret: Optional[str] = None
+    api_domain: Optional[str] = None
 
     @root_validator()
     def validate_environment(cls, values: Dict) -> Dict:
@@ -65,9 +70,11 @@ class ChatSpark(BaseChatModel):
         )
 
         values["client"] = SparkLLMClient(
+            model_name=values["model_name"],
             app_id=values["app_id"],
             api_key=values["api_key"],
             api_secret=values["api_secret"],
+            api_domain=values.get('api_domain')
         )
         return values
 
