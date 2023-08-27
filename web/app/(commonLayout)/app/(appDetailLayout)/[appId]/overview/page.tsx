@@ -1,8 +1,6 @@
-import React from 'react'
+// import React from 'react'
 import ChartView from './chartView'
 import CardView from './cardView'
-import { getLocaleOnServer } from '@/i18n/server'
-import { useTranslation } from '@/i18n/i18next-serverside-config'
 import ApikeyInfoPanel from '@/app/components/app/overview/apikey-info-panel'
 
 export type IDevelopProps = {
@@ -12,14 +10,15 @@ export type IDevelopProps = {
 const Overview = async ({
   params: { appId },
 }: IDevelopProps) => {
-  const locale = getLocaleOnServer()
-  const { t } = await useTranslation(locale, 'app-overview')
+  // Error:   16:23  error  React Hook "useTranslation" cannot be called in an async function  react-hooks/rules-of-hooks
+  // const locale = getLocaleOnServer()
+  // const { t } = await useTranslation(locale, 'app-overview')
+
   return (
     <div className="h-full px-16 py-6 overflow-scroll">
-      {/* <WelcomeBanner /> */}
       <ApikeyInfoPanel />
       <div className='flex flex-row items-center justify-between mb-4 text-xl text-gray-900'>
-        {t('overview.title')}
+        overview.title
       </div>
       <CardView appId={appId} />
       <ChartView appId={appId} />
