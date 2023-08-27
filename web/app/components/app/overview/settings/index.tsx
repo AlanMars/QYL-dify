@@ -18,7 +18,7 @@ export type ISettingsModalProps = {
   isShow: boolean
   defaultValue?: string
   onClose: () => void
-  onSave?: (params: ConfigParams) => Promise<any>
+  onSave?: (params: ConfigParams) => Promise<void>
 }
 
 export type ConfigParams = {
@@ -26,6 +26,10 @@ export type ConfigParams = {
   description: string
   default_language: string
   prompt_public: boolean
+  copyright: string
+  privacy_policy: string
+  icon: string
+  icon_background: string
 }
 
 const LANGUAGE_MAP: Record<Language, string> = {
@@ -82,7 +86,7 @@ const SettingsModal: FC<ISettingsModalProps> = ({
   }
 
   const onChange = (field: string) => {
-    return (e: any) => {
+    return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setInputInfo(item => ({ ...item, [field]: e.target.value }))
     }
   }
@@ -145,7 +149,7 @@ const SettingsModal: FC<ISettingsModalProps> = ({
           <p className={`mt-1 ${s.settingsTip} text-gray-500`}>
             <Trans
               i18nKey={`${prefixSettings}.more.privacyPolicyTip`}
-              components={{ privacyPolicyLink: <Link href={'http://racio.ai'} target='_blank' className='text-primary-600' /> }}
+              components={{ privacyPolicyLink: <Link href={'https://langgenius.ai/privacy-policy'} target='_blank' className='text-primary-600' /> }}
             />
           </p>
           <input className={`w-full mt-2 rounded-lg h-10 box-border px-3 ${s.projectName} bg-gray-100`}
