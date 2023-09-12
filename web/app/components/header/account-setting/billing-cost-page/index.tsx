@@ -1,12 +1,9 @@
 'use client'
-import { useState } from 'react'
 import useSWR from 'swr'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useTranslation } from 'react-i18next'
-import InviteModal from './invite-modal'
-import InvitedModal from './invited-modal'
 import { fetchMembers } from '@/service/common'
 import { getAppTokenCosts } from '@/service/apps'
 import { useAppContext } from '@/context/app-context'
@@ -18,10 +15,6 @@ dayjs.extend(relativeTime)
 const BillingCostPage = () => {
   const { t } = useTranslation()
   const { userProfile, apps } = useAppContext()
-
-  const [inviteModalVisible, setInviteModalVisible] = useState(false)
-  const [invitationLink, setInvitationLink] = useState('')
-  const [invitedModalVisible, setInvitedModalVisible] = useState(false)
 
   const { data, mutate } = useSWR({ url: '/workspaces/current/members' }, fetchMembers)
   const accounts = data?.accounts || []
@@ -116,26 +109,6 @@ const BillingCostPage = () => {
           </div>
         </div>
       </div>
-      {
-        inviteModalVisible && (
-          <InviteModal
-            onCancel={() => setInviteModalVisible(false)}
-            onSend={(url) => {
-              setInvitedModalVisible(true)
-              setInvitationLink(url)
-              mutate()
-            }}
-          />
-        )
-      }
-      {
-        invitedModalVisible && (
-          <InvitedModal
-            invitationLink={invitationLink}
-            onCancel={() => setInvitedModalVisible(false)}
-          />
-        )
-      }
     </>
   )
 }
