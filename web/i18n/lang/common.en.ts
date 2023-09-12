@@ -96,6 +96,7 @@ const translation = {
     workplaceGroup: 'WORKPLACE',
     account: 'My account',
     members: 'Members',
+    billingCost: 'Billing & Cost',
     integrations: 'Integrations',
     language: 'Language',
     provider: 'Model Provider',
@@ -148,6 +149,9 @@ const translation = {
     disinvite: 'Cancel the invitation',
     deleteMember: 'Delete Member',
     you: '(You)',
+    totalConsumedToken: 'Consumed Token',
+    totalConsumedCost: 'Consumed Power',
+    rate: 'Quota(%)',
   },
   integrations: {
     connected: 'Connected',

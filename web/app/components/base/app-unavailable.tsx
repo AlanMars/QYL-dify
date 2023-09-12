@@ -19,7 +19,7 @@ const AppUnavailable: FC<IAppUnavailableProps> = ({
   const { t } = useTranslation()
 
   return (
-    <div>
+    <>
       <div className='flex items-center justify-center w-screen h-screen'>
         <h1 className='mr-5 h-[50px] leading-[50px] pr-5 text-[24px] font-medium'
           style={{
@@ -36,7 +36,7 @@ const AppUnavailable: FC<IAppUnavailableProps> = ({
           />
         </center>
       </div>
-    </div>
+    </>
   )
 }
 export default React.memo(AppUnavailable)

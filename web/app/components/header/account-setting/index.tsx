@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useEffect, useRef, useState } from 'react'
 import cn from 'classnames'
 import AccountPage from './account-page'
+import BillingCostPage from './billing-cost-page'
 import MembersPage from './members-page'
 import LanguagePage from './language-page'
 import PluginPage from './plugin-page'
@@ -86,6 +87,12 @@ export default function AccountSetting({
         },
         */
         {
+          key: 'billing-cost',
+          name: t('common.settings.billingCost'),
+          icon: <User01 className={iconClassName} />,
+          activeIcon: <User01Solid className={iconClassName} />,
+        },
+        {
           key: 'language',
           name: t('common.settings.language'),
           icon: <Globe01 className={iconClassName} />,
@@ -158,6 +165,7 @@ export default function AccountSetting({
           <div className='px-8 pt-2'>
             {activeMenu === 'account' && <AccountPage />}
             {activeMenu === 'members' && <MembersPage />}
+            {activeMenu === 'billing-cost' && <BillingCostPage />}
             {/* activeMenu === 'integrations' && <IntegrationsPage /> */}
             {activeMenu === 'language' && <LanguagePage />}
             {activeMenu === 'provider' && <ModelPage />}

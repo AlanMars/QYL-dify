@@ -96,6 +96,7 @@ const translation = {
     workplaceGroup: '工作空间',
     account: '我的账户',
     members: '成员',
+    billingCost: '账单',
     integrations: '集成',
     language: '语言',
     provider: '模型供应商',
@@ -148,6 +149,9 @@ const translation = {
     disinvite: '取消邀请',
     deleteMember: '删除成员',
     you: '（你）',
+    totalConsumedToken: '已使用Tokens',
+    totalConsumedCost: '已使用电力值',
+    rate: '配额(%)',
   },
   integrations: {
     connected: '登录方式',
