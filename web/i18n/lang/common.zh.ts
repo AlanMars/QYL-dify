@@ -149,8 +149,12 @@ const translation = {
     disinvite: '取消邀请',
     deleteMember: '删除成员',
     you: '（你）',
+    powerQuota: '总配额',
+    powerConsumed: '已消耗',
     totalConsumedToken: '已使用Tokens',
-    totalConsumedCost: '已使用电力值',
+    totalConsumedPower: '已使用电力值',
+    billingCost: '总计',
+    billingDetails: '明细',
     rate: '配额(%)',
   },
   integrations: {

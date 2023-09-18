@@ -149,8 +149,12 @@ const translation = {
     disinvite: 'Cancel the invitation',
     deleteMember: 'Delete Member',
     you: '(You)',
+    powerQuota: 'Quota',
+    powerConsumed: 'Consumed',
     totalConsumedToken: 'Consumed Token',
-    totalConsumedCost: 'Consumed Power',
+    totalConsumedPower: 'Consumed Power',
+    billingCost: 'Cost',
+    billingDetails: 'Details',
     rate: 'Quota(%)',
   },
   integrations: {
