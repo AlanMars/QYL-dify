@@ -74,7 +74,7 @@ const Main: FC<IMainProps> = ({
       if (plan !== 'basic')
         document.title = `${siteInfo.title}`
       else
-        document.title = `${siteInfo.title} - Powered by RACIO`
+        document.title = `${siteInfo.title} - by RACIO`
     }
   }, [siteInfo?.title, plan])
 
