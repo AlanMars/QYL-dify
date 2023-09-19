@@ -107,8 +107,8 @@ const translation = {
       explanation: '与 AI 有效互动，即有一问一答以上的唯一用户数。提示词编排和调试的会话不计入。',
     },
     tokenUsage: {
-      title: '费用消耗',
-      explanation: '反映每日该应用请求语言模型的 Tokens 花费，用于成本控制。',
+      title: '电力消耗',
+      explanation: '反映每日该应用请求语言模型的 电力⚡️ 花费，用于成本控制。',
       consumed: '耗费',
     },
     avgSessionInteractions: {

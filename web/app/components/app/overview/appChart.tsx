@@ -222,7 +222,11 @@ const Chart: React.FC<IChartProps> = ({
       },
     ],
   }
+  // Token
   const sumData = isAvg ? (sum(yData) / yData.length) : sum(yData)
+  // Power
+  const worksapceRate = 1.5
+  const sumPowerData = sumData * worksapceRate
 
   return (
     <div className={`flex flex-col w-full px-6 py-4 border-[0.5px] rounded-lg border-gray-200 shadow-xs ${className ?? ''}`}>
@@ -232,15 +236,15 @@ const Chart: React.FC<IChartProps> = ({
       <div className='mb-4 flex-1'>
         <Basic
           isExtraInLine={CHART_TYPE_CONFIG[chartType].showTokens}
-          name={chartType !== 'costs' ? (sumData.toLocaleString() + unit) : `${sumData < 1000 ? sumData : (`${formatNumber(Math.round(sumData / 1000))}k`)}`}
+          name={chartType !== 'costs' ? (sumPowerData.toLocaleString() + unit) : `${sumPowerData < 1000 ? sumPowerData : (`${formatNumber(Math.round(sumPowerData / 1000))}k`)}`}
           type={!CHART_TYPE_CONFIG[chartType].showTokens
             ? ''
-            : <span>{t('appOverview.analysis.tokenUsage.consumed')} Tokens<span className='text-sm'>
-              <span className='ml-1 text-gray-500'>(</span>
+            : <span>{t('appOverview.analysis.tokenUsage.consumed')} ⚡️ <span className='text-sm'>
+              {/* <span className='ml-1 text-gray-500'>(</span>
               <span className='text-orange-400'>~{sum(statistics.map(item => parseFloat(get(item, 'total_price', '0')))).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 4 })}</span>
-              <span className='text-gray-500'>)</span>
+              <span className='text-gray-500'>)</span> */}
             </span></span>}
-          textStyle={{ main: `!text-3xl !font-normal ${sumData === 0 ? '!text-gray-300' : ''}` }} />
+          textStyle={{ main: `!text-3xl !font-normal ${sumPowerData === 0 ? '!text-gray-300' : ''}` }} />
       </div>
       <ReactECharts option={options} style={{ height: 160 }} />
     </div>

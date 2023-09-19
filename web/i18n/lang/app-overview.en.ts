@@ -107,8 +107,8 @@ const translation = {
       explanation: 'Unique users engaging in Q&A with AI; prompt engineering/debugging excluded.',
     },
     tokenUsage: {
-      title: 'Token Usage',
-      explanation: 'Reflects the daily token usage of the language model for the application, useful for cost control purposes.',
+      title: 'Power Usage',
+      explanation: 'Reflects the daily power usage of the language model for the application, useful for cost control purposes.',
       consumed: 'Consumed',
     },
     avgSessionInteractions: {
