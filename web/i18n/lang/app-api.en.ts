@@ -6,6 +6,9 @@ const translation = {
   ok: 'In Service',
   copy: 'Copy',
   copied: 'Copied',
+  merMaind: {
+    rerender: 'Redo Rerender',
+  },
   never: 'Never',
   apiKeyModal: {
     apiSecretKey: 'API Secret key',

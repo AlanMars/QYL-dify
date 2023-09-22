@@ -45,6 +45,9 @@ class ModelProviderFactory:
         elif provider_name == 'wenxin':
             from core.model_providers.providers.wenxin_provider import WenxinProvider
             return WenxinProvider
+        elif provider_name == 'zhipuai':
+            from core.model_providers.providers.zhipuai_provider import ZhipuAIProvider
+            return ZhipuAIProvider
         elif provider_name == 'chatglm':
             from core.model_providers.providers.chatglm_provider import ChatGLMProvider
             return ChatGLMProvider
@@ -63,6 +66,9 @@ class ModelProviderFactory:
         elif provider_name == 'openllm':
             from core.model_providers.providers.openllm_provider import OpenLLMProvider
             return OpenLLMProvider
+        elif provider_name == 'localai':
+            from core.model_providers.providers.localai_provider import LocalAIProvider
+            return LocalAIProvider
         else:
             raise NotImplementedError
 

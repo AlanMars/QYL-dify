@@ -41,6 +41,8 @@ export enum ProviderEnum {
   'chatglm' = 'chatglm',
   'xinference' = 'xinference',
   'openllm' = 'openllm',
+  'localai' = 'localai',
+  'zhipuai' = 'zhipuai',
 }
 
 export type ProviderConfigItem = {

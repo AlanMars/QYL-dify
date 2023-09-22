@@ -47,11 +47,11 @@ class HuggingfaceHubProvider(BaseModelProvider):
         :return:
         """
         return ModelKwargsRules(
-            temperature=KwargRule[float](min=0, max=2, default=1),
-            top_p=KwargRule[float](min=0.01, max=0.99, default=0.7),
+            temperature=KwargRule[float](min=0, max=2, default=1, precision=2),
+            top_p=KwargRule[float](min=0.01, max=0.99, default=0.7, precision=2),
             presence_penalty=KwargRule[float](enabled=False),
             frequency_penalty=KwargRule[float](enabled=False),
-            max_tokens=KwargRule[int](alias='max_new_tokens', min=10, max=4000, default=200),
+            max_tokens=KwargRule[int](alias='max_new_tokens', min=10, max=4000, default=200, precision=0),
         )
 
     @classmethod
@@ -89,7 +89,8 @@ class HuggingfaceHubProvider(BaseModelProvider):
                 raise CredentialsValidateFailedError('Task Type must be provided.')
 
             if credentials['task_type'] not in ("text2text-generation", "text-generation", "summarization"):
-                raise CredentialsValidateFailedError('Task Type must be one of text2text-generation, text-generation, summarization.')
+                raise CredentialsValidateFailedError('Task Type must be one of text2text-generation, '
+                                                     'text-generation, summarization.')
 
             try:
                 llm = HuggingFaceEndpointLLM(

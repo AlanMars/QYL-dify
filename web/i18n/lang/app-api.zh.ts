@@ -5,6 +5,9 @@ const translation = {
   disabled: '已停用',
   ok: '运行中',
   copy: '复制',
+  merMaind: {
+    rerender: '重新渲染',
+  },
   copied: '已复制',
   never: '从未',
   apiKeyModal: {

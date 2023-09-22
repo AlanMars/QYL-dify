@@ -6,9 +6,11 @@
   "tongyi",
   "spark",
   "wenxin",
+  "zhipuai",
   "chatglm",
   "replicate",
   "huggingface_hub",
   "xinference",
-  "openllm"
+  "openllm",
+  "localai"
 ]
