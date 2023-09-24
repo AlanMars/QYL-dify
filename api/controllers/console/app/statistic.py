@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 from decimal import Decimal
 from datetime import datetime
+import decimal
+import os
 
 import pytz
 from flask import jsonify
@@ -197,6 +199,7 @@ class DailyTokenCostStatistic(Resource):
                 'date': str(i.date),
                 'token_count': i.token_count,
                 'total_price': i.total_price,
+                'total_power': self.getPower(i.total_price),
                 'currency': 'USD'
             })
 
@@ -204,6 +207,17 @@ class DailyTokenCostStatistic(Resource):
             'data': response_data
         })
 
+    def getPower(self, price: Decimal) -> Decimal:
+        USD_CNY_EXCHANGE_RATE = self.getEnv('USD_CNY_EXCHANGE_RATE')        # Decimal(7.30)
+        CNY_POWER_EXCHANGE_RATE = self.getEnv('CNY_POWER_EXCHANGE_RATE')    # Decimal(100)
+        WORKSPACE_PREMIUM_RATE_DEFAULT = self.getEnv('WORKSPACE_PREMIUM_RATE_DEFAULT') # Decimal(1.0)
+
+        power = price * Decimal(USD_CNY_EXCHANGE_RATE) * Decimal(CNY_POWER_EXCHANGE_RATE) * Decimal(1.5) * Decimal(WORKSPACE_PREMIUM_RATE_DEFAULT)
+        power = power.quantize(Decimal('0.001'), rounding=decimal.ROUND_HALF_UP)
+        return power
+    
+    def getEnv(self, key: str):
+        return os.environ.get(key)
 
 class AverageSessionInteractionStatistic(Resource):
     @setup_required

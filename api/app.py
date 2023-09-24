@@ -28,7 +28,7 @@ from events import event_handlers
 # DO NOT REMOVE ABOVE
 
 import core
-from config import Config, CloudEditionConfig
+from config import Config, CloudEditionConfig, CloudEditionPremiumConfig
 from commands import register_commands
 from models.account import TenantAccountJoin, AccountStatus
 from models.model import Account, EndUser, App
@@ -60,7 +60,8 @@ def create_app(test_config=None) -> Flask:
         app.config.from_object(test_config)
     else:
         if config_type == "CLOUD":
-            app.config.from_object(CloudEditionConfig())
+            #app.config.from_object(CloudEditionConfig())
+            app.config.from_object(CloudEditionPremiumConfig())
         else:
             app.config.from_object(Config())
 
