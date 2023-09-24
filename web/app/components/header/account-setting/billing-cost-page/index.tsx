@@ -41,6 +41,7 @@ const BillingCostPage = () => {
     date: string
     token_count: number
     total_price: string
+    total_power: string
   }
 
   type TokenCostResult = {
@@ -52,17 +53,18 @@ const BillingCostPage = () => {
   function SumCost(data: TokenCostData[]): TokenCostResult {
     let totalCount = 0
     let totalCost = 0
-    const totalPower = 0
+    let totalPower = 0
 
     data.forEach((item) => {
       totalCount += item.token_count
       totalCost += parseFloat(item.total_price)
+      totalPower += parseFloat(item.total_power)
     })
 
     return {
       total_count: totalCount,
       total_cost: totalCost,
-      total_power: totalCount * worksapceRate,
+      total_power: totalPower,
     }
   }
 
