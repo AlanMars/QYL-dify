@@ -2,7 +2,8 @@ version: '3.1'
 services:
   # API service
   api:
-    image: langgenius/dify-api:0.3.23
+    #image: langgenius/dify-api:0.3.23
+    image: dify-api-qyl-b22:0.3.23
     restart: always
     environment:
       # Startup mode, 'api' starts the API server.
@@ -116,6 +117,12 @@ services:
       SENTRY_TRACES_SAMPLE_RATE: 1.0
       # The sample rate for Sentry profiles. Default: `1.0`
       SENTRY_PROFILES_SAMPLE_RATE: 1.0
+      # USD/CNY Exchange Rate ($1.00 = ￥7.30)
+      USD_CNY_EXCHANGE_RATE: 7.3
+      # RMB/Power Exchange Rate (￥1.00 = ⚡️100)
+      CNY_POWER_EXCHANGE_RATE: 100
+      # Workspace Premium Rate
+      WORKSPACE_PREMIUM_RATE_DEFAULT: 1.0
     depends_on:
       - db
       - redis
@@ -127,7 +134,8 @@ services:
   # Worker service
   # The Celery worker for processing the queue.
   worker:
-    image: langgenius/dify-api:0.3.23
+    #image: langgenius/dify-api:0.3.23
+    image: dify-api-qyl-b22:0.3.23
     restart: always
     environment:
       # Startup mode, 'worker' starts the Celery worker for processing the queue.
