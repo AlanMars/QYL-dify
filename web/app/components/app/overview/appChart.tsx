@@ -107,10 +107,19 @@ const Chart: React.FC<IChartProps> = ({
   extraDataForMarkLine.unshift('')
 
   const xData = statistics.map(({ date }) => date)
+
+  // Token
   const yField = valueKey || Object.keys(statistics[0]).find(name => name.includes('count')) || ''
   const yData = statistics.map((item) => {
     // @ts-expect-error field is valid
     return item[yField] || 0
+  })
+
+  // Power
+  const yFieldPower = valueKey || Object.keys(statistics[0]).find(name => name.includes('power')) || ''
+  const yDataPower = statistics.map((item) => {
+    // @ts-expect-error field is valid
+    return parseFloat(item[yFieldPower]) || 0
   })
 
   const options: EChartsOption = {
@@ -208,23 +217,32 @@ const Chart: React.FC<IChartProps> = ({
           padding: [8, 12, 8, 12],
           formatter(params) {
             return `<div style='color:#6B7280;font-size:12px'>${params.name}</div>
-                          <div style='font-size:14px;color:#1F2A37'>${valueFormatter((params.data as any)[yField])}
-                              ${!CHART_TYPE_CONFIG[chartType].showTokens
-    ? ''
-    : `<span style='font-size:12px'>
-                                  <span style='margin-left:4px;color:#6B7280'>(</span>
-                                  <span style='color:#FF8A4C'>⚡️${get(params.data, 'total_power', 0)}</span>
-                                  <span style='color:#6B7280'>)</span>
-                              </span>`}
-                          </div>`
+                    <div style='font-size:14px;color:#1F2A37'>${valueFormatter((params.data as any)[yFieldPower])}</div>`
           },
         },
+        //     tooltip: {
+        //       padding: [8, 12, 8, 12],
+        //       formatter(params) {
+        //         return `<div style='color:#6B7280;font-size:12px'>${params.name}</div>
+        //                       <div style='font-size:14px;color:#1F2A37'>${valueFormatter((params.data as any)[yField])}
+        //                           ${!CHART_TYPE_CONFIG[chartType].showTokens
+        // ? ''
+        // : `<span style='font-size:12px'>
+        //                               <span style='margin-left:4px;color:#6B7280'>(</span>
+        //                               <span style='color:#FF8A4C'>⚡️${get(params.data, 'total_power', 0)}</span>
+        //                               <span style='color:#6B7280'>)</span>
+        //                           </span>`}
+        //                       </div>`
+        //       },
+        //     },
       },
     ],
   }
 
-  // Token
+  // yData for Token
   const sumData = isAvg ? (sum(yData) / yData.length) : sum(yData)
+  // yDataPower for Power
+  const sumDataPower = isAvg ? (sum(yDataPower) / yDataPower.length) : sum(yDataPower)
 
   return (
     <div className={`flex flex-col w-full px-6 py-4 border-[0.5px] rounded-lg border-gray-200 shadow-xs ${className ?? ''}`}>
@@ -234,7 +252,10 @@ const Chart: React.FC<IChartProps> = ({
       <div className='mb-4 flex-1'>
         <Basic
           isExtraInLine={CHART_TYPE_CONFIG[chartType].showTokens}
-          name={chartType !== 'costs' ? (sumData.toLocaleString() + unit) : `${sumData < 1000 ? sumData : (`${formatNumber(Math.round(sumData / 1000))}k`)}`}
+          // Token
+          // name={chartType !== 'costs' ? (sumData.toLocaleString() + unit) : `${sumData < 1000 ? sumData : (`${formatNumber(Math.round(sumData / 1000))}k`)}`}
+          // Power
+          name={chartType !== 'costs' ? (sumDataPower.toFixed(2).toLocaleString() + unit) : `${sumDataPower < 1000 ? sumDataPower.toFixed(2) : (`${formatNumber(Math.round(sumDataPower / 1000))}k`)}`}
           type={!CHART_TYPE_CONFIG[chartType].showTokens
             ? ''
             : <span>{t('appOverview.analysis.tokenUsage.consumed')}<span className='text-sm'>
@@ -242,7 +263,7 @@ const Chart: React.FC<IChartProps> = ({
               <span className='text-orange-400'>~{sum(statistics.map(item => parseFloat(get(item, 'total_price', '0')))).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 4 })}</span>
               <span className='text-gray-500'>)</span> */}
               <span className='ml-1 text-gray-500'>(</span>
-              <span className='text-orange-400'>⚡️{sum(statistics.map(item => parseFloat(get(item, 'total_power', '0'))))}</span>
+              <span className='text-orange-400'>⚡️{Math.ceil(sum(statistics.map(item => parseFloat(get(item, 'total_power', '0')))))}</span>
               <span className='text-gray-500'>)</span>
             </span></span>}
           textStyle={{ main: `!text-3xl !font-normal ${sumData === 0 ? '!text-gray-300' : ''}` }} />

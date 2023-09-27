@@ -32,7 +32,6 @@ const BillingCostPage = () => {
   const accounts = data?.accounts || []
   const owner = accounts.filter(account => account.role === 'owner')?.[0]?.email === userProfile.email
 
-  const worksapceRate = 1.5
   const worksapceTotalPowerQuota = 10000
   let worksapceTotalPowerConsumed = 0
 
@@ -119,7 +118,7 @@ const BillingCostPage = () => {
                   {/* <div className='shrink-0 flex items-center w-[104px] py-2 text-[13px] text-gray-700'>{GetAppCost(app.id).total_count}</div> */}
                   <div className='shrink-0 flex items-center w-[104px] py-2 text-[13px] text-gray-700'>
                     <span className='text-sm'>
-                      <span className='text-orange-400'> ⚡️ { GetAppCost(app.id).total_power.toString().toLocaleString() } </span>
+                      <span className='text-orange-400'> ⚡️ { Math.ceil(GetAppCost(app.id).total_power) } </span>
                     </span>
                   </div>
                   {/* <div className='shrink-0 flex items-center w-[104px] py-2 text-[13px] text-gray-700'>
@@ -133,7 +132,7 @@ const BillingCostPage = () => {
 
         <div className='mb-8'>
           <div className={titleClassName}>{t('common.members.powerQuota')}</div>
-          <div className={classNames(inputClassName, 'cursor-pointer')}> ⚡️ { worksapceTotalPowerConsumed } / { worksapceTotalPowerQuota }</div>
+          <div className={classNames(inputClassName, 'cursor-pointer')}> ⚡️ { Math.ceil(worksapceTotalPowerConsumed) } / { worksapceTotalPowerQuota }</div>
         </div>
 
       </div>
