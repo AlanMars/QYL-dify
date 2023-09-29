@@ -109,21 +109,15 @@ const BillingCostPage = () => {
                     <div className=''>
                       <div className='text-[13px] font-medium text-gray-700 leading-[18px]'>
                         {app.name}
-                        {/* {account.status === 'pending' && <span className='ml-1 text-xs text-[#DC6803]'>{t('common.members.pending')}</span>}
-                        {userProfile.email === account.email && <span className='text-xs text-gray-500'>{t('common.members.you')}</span>} */}
                       </div>
                       <div className='text-xs text-gray-500 leading-[18px]'>{app.id}</div>
                     </div>
                   </div>
-                  {/* <div className='shrink-0 flex items-center w-[104px] py-2 text-[13px] text-gray-700'>{GetAppCost(app.id).total_count}</div> */}
                   <div className='shrink-0 flex items-center w-[104px] py-2 text-[13px] text-gray-700'>
                     <span className='text-sm'>
                       <span className='text-orange-400'> ⚡️ { Math.ceil(GetAppCost(app.id).total_power) } </span>
                     </span>
                   </div>
-                  {/* <div className='shrink-0 flex items-center w-[104px] py-2 text-[13px] text-gray-700'>
-                    <span>{ parseFloat(FloatToPercent(1 - GetAppCost(app.id).total_cost / 100.00)) } %</span>
-                  </div> */}
                 </div>
               ))
             }
