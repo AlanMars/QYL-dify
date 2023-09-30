@@ -6,8 +6,10 @@ import { IS_CE_EDITION } from '@/config'
 const config: ProviderConfig = {
   selector: {
     name: {
-      'en': 'OpenAI',
-      'zh-Hans': 'OpenAI',
+      // 'en': 'OpenAI',
+      // 'zh-Hans': 'OpenAI',
+      'en': '',
+      'zh-Hans': '',
     },
     icon: <OpenaiBlack className='w-full h-full' />,
   },

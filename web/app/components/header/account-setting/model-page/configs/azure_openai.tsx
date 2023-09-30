@@ -5,8 +5,10 @@ import { AzureOpenaiService, AzureOpenaiServiceText, OpenaiBlue } from '@/app/co
 const config: ProviderConfig = {
   selector: {
     name: {
-      'en': 'Azure OpenAI Service',
-      'zh-Hans': 'Azure OpenAI Service',
+      // 'en': 'Azure OpenAI Service',
+      // 'zh-Hans': 'Azure OpenAI Service',
+      'en': '',
+      'zh-Hans': '',
     },
     icon: <OpenaiBlue className='w-full h-full' />,
   },
