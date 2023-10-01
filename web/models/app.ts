@@ -90,7 +90,7 @@ export type AppDailyEndUsersResponse = {
 }
 
 export type AppTokenCostsResponse = {
-  data: Array<{ date: string; token_count: number; total_price: number; currency: number }>
+  data: Array<{ date: string; token_count: number; total_power: number; total_price: number; currency: number }>
 }
 
 export type UpdateAppModelConfigResponse = { result: string }

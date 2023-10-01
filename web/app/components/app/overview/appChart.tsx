@@ -239,10 +239,8 @@ const Chart: React.FC<IChartProps> = ({
     ],
   }
 
-  // yData for Token
   const sumData = isAvg ? (sum(yData) / yData.length) : sum(yData)
-  // yDataPower for Power
-  const sumDataPower = isAvg ? (sum(yDataPower) / yDataPower.length) : sum(yDataPower)
+  const sumDataPower = isAvg ? (sum(yDataPower) / yDataPower.length) : sum(yDataPower) // yDataPower only for Power
 
   return (
     <div className={`flex flex-col w-full px-6 py-4 border-[0.5px] rounded-lg border-gray-200 shadow-xs ${className ?? ''}`}>
@@ -252,10 +250,9 @@ const Chart: React.FC<IChartProps> = ({
       <div className='mb-4 flex-1'>
         <Basic
           isExtraInLine={CHART_TYPE_CONFIG[chartType].showTokens}
-          // Token
           // name={chartType !== 'costs' ? (sumData.toLocaleString() + unit) : `${sumData < 1000 ? sumData : (`${formatNumber(Math.round(sumData / 1000))}k`)}`}
-          // Power
-          name={chartType !== 'costs' ? (sumDataPower.toFixed(2).toLocaleString() + unit) : `${sumDataPower < 1000 ? sumDataPower.toFixed(2) : (`${formatNumber(Math.round(sumDataPower / 1000))}k`)}`}
+          // Power will show if chartType is 'costs'
+          name={chartType !== 'costs' ? (sumData.toLocaleString() + unit) : `${sumDataPower < 1000 ? sumDataPower.toFixed(2) : (`${formatNumber(Math.round(sumDataPower / 1000))}k`)}`}
           type={!CHART_TYPE_CONFIG[chartType].showTokens
             ? ''
             : <span>{t('appOverview.analysis.tokenUsage.consumed')}<span className='text-sm'>
