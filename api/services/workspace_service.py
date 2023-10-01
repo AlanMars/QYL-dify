@@ -15,6 +15,7 @@ class WorkspaceService:
             'plan': tenant.plan,
             'status': tenant.status,
             'created_at': tenant.created_at,
+            'premium_rate': tenant.premium_rate,
             'providers': [],
             'in_trail': True,
             'trial_end_reason': None,

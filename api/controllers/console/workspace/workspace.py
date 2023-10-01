@@ -31,6 +31,7 @@ tenant_fields = {
     'plan': fields.String,
     'status': fields.String,
     'created_at': TimestampField,
+    'premium_rate': fields.Float,
     'role': fields.String,
     'providers': fields.List(fields.Nested(provider_fields)),
     'in_trial': fields.Boolean,
@@ -43,6 +44,7 @@ tenants_fields = {
     'plan': fields.String,
     'status': fields.String,
     'created_at': TimestampField,
+    'premium_rate': fields.Float,
     'current': fields.Boolean
 }
 
@@ -50,7 +52,8 @@ workspace_fields = {
     'id': fields.String,
     'name': fields.String,
     'status': fields.String,
-    'created_at': TimestampField
+    'created_at': TimestampField,
+    'premium_rate': fields.Float
 }
 
 

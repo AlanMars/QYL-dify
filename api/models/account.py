@@ -114,6 +114,7 @@ class Tenant(db.Model):
     status = db.Column(db.String(255), nullable=False, server_default=db.text("'normal'::character varying"))
     created_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
     updated_at = db.Column(db.DateTime, nullable=False, server_default=db.text('CURRENT_TIMESTAMP(0)'))
+    premium_rate = db.Column(db.Numeric(10, 4), nullable=False, server_default=db.text('1.000'))
 
     def get_accounts(self) -> List[db.Model]:
         Account = db.Model
