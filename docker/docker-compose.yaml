@@ -15,6 +15,8 @@ services:
       LOG_LEVEL: INFO
       # A secret key that is used for securely signing the session cookie and encrypting sensitive information on the database. You can generate a strong key using `openssl rand -base64 42`.
       SECRET_KEY: sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
+      # Authenticated for admin API call. You can generate a strong key using `openssl rand -base64 256`
+      ADMIN_API_KEY: Hq5L16r+4A==
       # The base URL of console application web frontend, refers to the Console base URL of WEB service if console domain is
       # different from api or web app domain.
       # example: http://cloud.dify.ai
@@ -81,9 +83,12 @@ services:
       # you must use the HTTPS protocol and set the configuration to `SameSite=None, Secure=true, HttpOnly=true`.
       #
       # For **production** purposes, please set `SameSite=Lax, Secure=true, HttpOnly=true`.
+      #COOKIE_HTTPONLY: 'true'
+      #COOKIE_SAMESITE: 'Lax'
+      #COOKIE_SECURE: 'false'
       COOKIE_HTTPONLY: 'true'
-      COOKIE_SAMESITE: 'Lax'
-      COOKIE_SECURE: 'false'
+      COOKIE_SAMESITE: 'None'
+      COOKIE_SECURE: 'true'
       # The type of storage to use for storing user files. Supported values are `local` and `s3`, Default: `local`
       STORAGE_TYPE: local
       # The path to the local storage directory, the directory relative the root path of API service codes or absolute path. Default: `storage` or `/home/john/storage`.
