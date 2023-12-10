@@ -96,7 +96,7 @@ class DatasetService:
         embedding_model = None
         if indexing_technique == 'high_quality':
             embedding_model = ModelFactory.get_embedding_model(
-                tenant_id=current_user.current_tenant_id
+                tenant_id=tenant_id
             )
         dataset = Dataset(name=name, indexing_technique=indexing_technique)
         # dataset = Dataset(name=name, provider=provider, config=config)
@@ -172,6 +172,9 @@ class DatasetService:
 
         filtered_data['updated_by'] = user.id
         filtered_data['updated_at'] = datetime.datetime.now()
+
+        # update Retrieval model
+        filtered_data['retrieval_model'] = data['retrieval_model']
 
         dataset.query.filter_by(id=dataset_id).update(filtered_data)
 
@@ -385,9 +388,6 @@ class DocumentService:
 
     @staticmethod
     def delete_document(document):
-        if document.indexing_status in ["parsing", "cleaning", "splitting", "indexing"]:
-            raise DocumentIndexingError()
-
         # trigger document_was_deleted signal
         document_was_deleted.send(document.id, dataset_id=document.dataset_id)
 
@@ -476,6 +476,19 @@ class DocumentService:
                     embedding_model.name
                 )
                 dataset.collection_binding_id = dataset_collection_binding.id
+                if not dataset.retrieval_model:
+                    default_retrieval_model = {
+                        'search_method': 'semantic_search',
+                        'reranking_enable': False,
+                        'reranking_model': {
+                            'reranking_provider_name': '',
+                            'reranking_model_name': ''
+                        },
+                        'top_k': 2,
+                        'score_threshold_enabled': False
+                    }
+
+                    dataset.retrieval_model = document_data.get('retrieval_model') if document_data.get('retrieval_model') else default_retrieval_model
 
         documents = []
         batch = time.strftime('%Y%m%d%H%M%S') + str(random.randint(100000, 999999))
@@ -626,6 +639,9 @@ class DocumentService:
         document = DocumentService.get_document(dataset.id, document_data["original_document_id"])
         if document.display_status != 'available':
             raise ValueError("Document is not available")
+        # update document name
+        if 'name' in document_data and document_data['name']:
+            document.name = document_data['name']
         # save process rule
         if 'process_rule' in document_data and document_data['process_rule']:
             process_rule = document_data["process_rule"]
@@ -732,6 +748,7 @@ class DocumentService:
                 raise ValueError(f"All your documents have overed limit {tenant_document_count}.")
         embedding_model = None
         dataset_collection_binding_id = None
+        retrieval_model = None
         if document_data['indexing_technique'] == 'high_quality':
             embedding_model = ModelFactory.get_embedding_model(
                 tenant_id=tenant_id
@@ -741,6 +758,20 @@ class DocumentService:
                 embedding_model.name
             )
             dataset_collection_binding_id = dataset_collection_binding.id
+            if 'retrieval_model' in document_data and document_data['retrieval_model']:
+                retrieval_model = document_data['retrieval_model']
+            else:
+                default_retrieval_model = {
+                    'search_method': 'semantic_search',
+                    'reranking_enable': False,
+                    'reranking_model': {
+                        'reranking_provider_name': '',
+                        'reranking_model_name': ''
+                    },
+                    'top_k': 2,
+                    'score_threshold_enabled': False
+                }
+                retrieval_model = default_retrieval_model
         # save dataset
         dataset = Dataset(
             tenant_id=tenant_id,
@@ -750,7 +781,8 @@ class DocumentService:
             created_by=account.id,
             embedding_model=embedding_model.name if embedding_model else None,
             embedding_model_provider=embedding_model.model_provider.provider_name if embedding_model else None,
-            collection_binding_id=dataset_collection_binding_id
+            collection_binding_id=dataset_collection_binding_id,
+            retrieval_model=retrieval_model
         )
 
         db.session.add(dataset)
@@ -1015,6 +1047,66 @@ class SegmentService:
         return segment
 
     @classmethod
+    def multi_create_segment(cls, segments: list, document: Document, dataset: Dataset):
+        embedding_model = None
+        if dataset.indexing_technique == 'high_quality':
+            embedding_model = ModelFactory.get_embedding_model(
+                tenant_id=dataset.tenant_id,
+                model_provider_name=dataset.embedding_model_provider,
+                model_name=dataset.embedding_model
+            )
+        max_position = db.session.query(func.max(DocumentSegment.position)).filter(
+            DocumentSegment.document_id == document.id
+        ).scalar()
+        pre_segment_data_list = []
+        segment_data_list = []
+        for segment_item in segments:
+            content = segment_item['content']
+            doc_id = str(uuid.uuid4())
+            segment_hash = helper.generate_text_hash(content)
+            tokens = 0
+            if dataset.indexing_technique == 'high_quality' and embedding_model:
+                # calc embedding use tokens
+                tokens = embedding_model.get_num_tokens(content)
+            segment_document = DocumentSegment(
+                tenant_id=current_user.current_tenant_id,
+                dataset_id=document.dataset_id,
+                document_id=document.id,
+                index_node_id=doc_id,
+                index_node_hash=segment_hash,
+                position=max_position + 1 if max_position else 1,
+                content=content,
+                word_count=len(content),
+                tokens=tokens,
+                status='completed',
+                indexing_at=datetime.datetime.utcnow(),
+                completed_at=datetime.datetime.utcnow(),
+                created_by=current_user.id
+            )
+            if document.doc_form == 'qa_model':
+                segment_document.answer = segment_item['answer']
+            db.session.add(segment_document)
+            segment_data_list.append(segment_document)
+            pre_segment_data = {
+                'segment': segment_document,
+                'keywords': segment_item['keywords']
+            }
+            pre_segment_data_list.append(pre_segment_data)
+
+        try:
+            # save vector index
+            VectorService.multi_create_segment_vector(pre_segment_data_list, dataset)
+        except Exception as e:
+            logging.exception("create segment index failed")
+            for segment_document in segment_data_list:
+                segment_document.enabled = False
+                segment_document.disabled_at = datetime.datetime.utcnow()
+                segment_document.status = 'error'
+                segment_document.error = str(e)
+        db.session.commit()
+        return segment_data_list
+
+    @classmethod
     def update_segment(cls, args: dict, segment: DocumentSegment, document: Document, dataset: Dataset):
         indexing_cache_key = 'segment_{}_indexing'.format(segment.id)
         cache_result = redis_client.get(indexing_cache_key)
@@ -1027,6 +1119,8 @@ class SegmentService:
                     segment.answer = args['answer']
                 if args['keywords']:
                     segment.keywords = args['keywords']
+                if args['enabled'] is not None:
+                    segment.enabled = args['enabled']
                 db.session.add(segment)
                 db.session.commit()
                 # update segment index task

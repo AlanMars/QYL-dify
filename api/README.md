@@ -42,6 +42,20 @@
 
    ⚠️ If you encounter problems with jieba, for example
 
+   ```
+   > flask db upgrade
+   Error: While importing 'app', an ImportError was raised:
+   ```
+
+   Please run the following command instead.
+
+   ```
+   pip install -r requirements.txt --upgrade --force-reinstall
+   ```
+   
+
+   ⚠️ If you encounter problems with jieba, for example
+
    ```bash
    > flask db upgrade
    Error: While importing 'app', an ImportError was raised:
@@ -61,7 +75,7 @@
 
 7. Setup your application by visiting <http://localhost:5001/console/api/setup> or other apis...
 
-8. If you need to debug local async processing, you can run `celery -A app.celery worker -P gevent -c 1 --loglevel INFO -Q dataset,generation,mail`, celery can do dataset importing and other async tasks.
+8. If you need to debug local async processing, you can run `celery -A app.celery worker -P gevent -c 1 --loglevel INFO -P gevent -c 1 --loglevel INFO -Q dataset,generation,mail`, celery can do dataset importing and other async tasks.
 
 9. Start frontend
 
@@ -320,3 +334,4 @@
    web.web_conversation_name                             POST                /api/conversations/<uuid:c_id>/name         
    ```
    
+
