@@ -3,9 +3,8 @@ import logging
 
 from flask import request
 from flask_login import current_user
-from core.login.login import login_required
+from libs.login import login_required
 from flask_restful import Resource, fields, marshal_with, reqparse, marshal, inputs
-from flask_restful.inputs import int_range
 
 from controllers.console import api
 from controllers.console.admin import admin_required
@@ -52,8 +51,7 @@ workspace_fields = {
     'id': fields.String,
     'name': fields.String,
     'status': fields.String,
-    'created_at': TimestampField,
-    'premium_rate': fields.Float
+    'created_at': TimestampField
 }
 
 

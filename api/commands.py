@@ -3,12 +3,15 @@ import json
 import math
 import random
 import string
+import threading
 import time
 import uuid
 
 import click
+import qdrant_client
+from qdrant_client.http.models import TextIndexParams, TextIndexType, TokenizerType
 from tqdm import tqdm
-from flask import current_app
+from flask import current_app, Flask
 from langchain.embeddings import OpenAIEmbeddings
 from werkzeug.exceptions import NotFound
 
@@ -484,92 +487,124 @@ def update_qdrant_indexes():
 @click.command('normalization-collections', help='restore all collections in one')
 def normalization_collections():
     click.echo(click.style('Start normalization collections.', fg='green'))
-    normalization_count = 0
-
+    normalization_count = []
     page = 1
     while True:
         try:
             datasets = db.session.query(Dataset).filter(Dataset.indexing_technique == 'high_quality') \
-                .order_by(Dataset.created_at.desc()).paginate(page=page, per_page=50)
+                .order_by(Dataset.created_at.desc()).paginate(page=page, per_page=100)
         except NotFound:
             break
-
+        datasets_result = datasets.items
         page += 1
-        for dataset in datasets:
-            if not dataset.collection_binding_id:
-                try:
-                    click.echo('restore dataset index: {}'.format(dataset.id))
-                    try:
-                        embedding_model = ModelFactory.get_embedding_model(
-                            tenant_id=dataset.tenant_id,
-                            model_provider_name=dataset.embedding_model_provider,
-                            model_name=dataset.embedding_model
-                        )
-                    except Exception:
-                        provider = Provider(
-                            id='provider_id',
-                            tenant_id=dataset.tenant_id,
-                            provider_name='openai',
-                            provider_type=ProviderType.CUSTOM.value,
-                            encrypted_config=json.dumps({'openai_api_key': 'TEST'}),
-                            is_valid=True,
-                        )
-                        model_provider = OpenAIProvider(provider=provider)
-                        embedding_model = OpenAIEmbedding(name="text-embedding-ada-002",
-                                                          model_provider=model_provider)
-                    embeddings = CacheEmbedding(embedding_model)
-                    dataset_collection_binding = db.session.query(DatasetCollectionBinding). \
-                        filter(DatasetCollectionBinding.provider_name == embedding_model.model_provider.provider_name,
-                               DatasetCollectionBinding.model_name == embedding_model.name). \
-                        order_by(DatasetCollectionBinding.created_at). \
-                        first()
+        for i in range(0, len(datasets_result), 5):
+            threads = []
+            sub_datasets = datasets_result[i:i + 5]
+            for dataset in sub_datasets:
+                document_format_thread = threading.Thread(target=deal_dataset_vector, kwargs={
+                    'flask_app': current_app._get_current_object(),
+                    'dataset': dataset,
+                    'normalization_count': normalization_count
+                })
+                threads.append(document_format_thread)
+                document_format_thread.start()
+            for thread in threads:
+                thread.join()
 
-                    if not dataset_collection_binding:
-                        dataset_collection_binding = DatasetCollectionBinding(
-                            provider_name=embedding_model.model_provider.provider_name,
-                            model_name=embedding_model.name,
-                            collection_name="Vector_index_" + str(uuid.uuid4()).replace("-", "_") + '_Node'
-                        )
-                        db.session.add(dataset_collection_binding)
-                        db.session.commit()
+    click.echo(click.style('Congratulations! restore {} dataset indexes.'.format(len(normalization_count)), fg='green'))
 
-                    from core.index.vector_index.qdrant_vector_index import QdrantVectorIndex, QdrantConfig
 
-                    index = QdrantVectorIndex(
-                        dataset=dataset,
-                        config=QdrantConfig(
-                            endpoint=current_app.config.get('QDRANT_URL'),
-                            api_key=current_app.config.get('QDRANT_API_KEY'),
-                            root_path=current_app.root_path
-                        ),
-                        embeddings=embeddings
-                    )
-                    if index:
-                        index.restore_dataset_in_one(dataset, dataset_collection_binding)
-                    else:
-                        click.echo('passed.')
+@click.command('add-qdrant-full-text-index', help='add qdrant full text index')
+def add_qdrant_full_text_index():
+    click.echo(click.style('Start add full text index.', fg='green'))
+    binds = db.session.query(DatasetCollectionBinding).all()
+    if binds and current_app.config['VECTOR_STORE'] == 'qdrant':
+        qdrant_url = current_app.config['QDRANT_URL']
+        qdrant_api_key = current_app.config['QDRANT_API_KEY']
+        client = qdrant_client.QdrantClient(
+            qdrant_url,
+            api_key=qdrant_api_key,  # For Qdrant Cloud, None for local instance
+        )
+        for bind in binds:
+            try:
+                text_index_params = TextIndexParams(
+                    type=TextIndexType.TEXT,
+                    tokenizer=TokenizerType.MULTILINGUAL,
+                    min_token_len=2,
+                    max_token_len=20,
+                    lowercase=True
+                )
+                client.create_payload_index(bind.collection_name, 'page_content',
+                                            field_schema=text_index_params)
+            except Exception as e:
+                click.echo(
+                    click.style('Create full text index error: {} {}'.format(e.__class__.__name__, str(e)),
+                                fg='red'))
+            click.echo(
+                click.style(
+                    'Congratulations! add collection {} full text index successful.'.format(bind.collection_name),
+                    fg='green'))
 
-                    original_index = QdrantVectorIndex(
-                        dataset=dataset,
-                        config=QdrantConfig(
-                            endpoint=current_app.config.get('QDRANT_URL'),
-                            api_key=current_app.config.get('QDRANT_API_KEY'),
-                            root_path=current_app.root_path
-                        ),
-                        embeddings=embeddings
-                    )
-                    if original_index:
-                        original_index.delete_original_collection(dataset, dataset_collection_binding)
-                        normalization_count += 1
-                    else:
-                        click.echo('passed.')
-                except Exception as e:
-                    click.echo(
-                        click.style('Create dataset index error: {} {}'.format(e.__class__.__name__, str(e)),
-                                    fg='red'))
-                    continue
 
-    click.echo(click.style('Congratulations! restore {} dataset indexes.'.format(normalization_count), fg='green'))
+def deal_dataset_vector(flask_app: Flask, dataset: Dataset, normalization_count: list):
+    with flask_app.app_context():
+        try:
+            click.echo('restore dataset index: {}'.format(dataset.id))
+            try:
+                embedding_model = ModelFactory.get_embedding_model(
+                    tenant_id=dataset.tenant_id,
+                    model_provider_name=dataset.embedding_model_provider,
+                    model_name=dataset.embedding_model
+                )
+            except Exception:
+                provider = Provider(
+                    id='provider_id',
+                    tenant_id=dataset.tenant_id,
+                    provider_name='openai',
+                    provider_type=ProviderType.CUSTOM.value,
+                    encrypted_config=json.dumps({'openai_api_key': 'TEST'}),
+                    is_valid=True,
+                )
+                model_provider = OpenAIProvider(provider=provider)
+                embedding_model = OpenAIEmbedding(name="text-embedding-ada-002",
+                                                  model_provider=model_provider)
+            embeddings = CacheEmbedding(embedding_model)
+            dataset_collection_binding = db.session.query(DatasetCollectionBinding). \
+                filter(DatasetCollectionBinding.provider_name == embedding_model.model_provider.provider_name,
+                       DatasetCollectionBinding.model_name == embedding_model.name). \
+                order_by(DatasetCollectionBinding.created_at). \
+                first()
+
+            if not dataset_collection_binding:
+                dataset_collection_binding = DatasetCollectionBinding(
+                    provider_name=embedding_model.model_provider.provider_name,
+                    model_name=embedding_model.name,
+                    collection_name="Vector_index_" + str(uuid.uuid4()).replace("-", "_") + '_Node'
+                )
+                db.session.add(dataset_collection_binding)
+                db.session.commit()
+
+            from core.index.vector_index.qdrant_vector_index import QdrantVectorIndex, QdrantConfig
+
+            index = QdrantVectorIndex(
+                dataset=dataset,
+                config=QdrantConfig(
+                    endpoint=current_app.config.get('QDRANT_URL'),
+                    api_key=current_app.config.get('QDRANT_API_KEY'),
+                    root_path=current_app.root_path
+                ),
+                embeddings=embeddings
+            )
+            if index:
+                # index.delete_by_group_id(dataset.id)
+                index.restore_dataset_in_one(dataset, dataset_collection_binding)
+            else:
+                click.echo('passed.')
+            normalization_count.append(1)
+        except Exception as e:
+            click.echo(
+                click.style('Create dataset index error: {} {}'.format(e.__class__.__name__, str(e)),
+                            fg='red'))
 
 
 @click.command('update_app_model_configs', help='Migrate data to support paragraph variable.')
@@ -675,6 +710,76 @@ def update_app_model_configs(batch_size):
             pbar.update(len(data_batch))
 
 
+@click.command('migrate_default_input_to_dataset_query_variable')
+@click.option("--batch-size", default=500, help="Number of records to migrate in each batch.")
+def migrate_default_input_to_dataset_query_variable(batch_size):
+    click.secho("Starting...", fg='green')
+
+    total_records = db.session.query(AppModelConfig) \
+        .join(App, App.app_model_config_id == AppModelConfig.id) \
+        .filter(App.mode == 'completion') \
+        .filter(AppModelConfig.dataset_query_variable == None) \
+        .count()
+
+    if total_records == 0:
+        click.secho("No data to migrate.", fg='green')
+        return
+
+    num_batches = (total_records + batch_size - 1) // batch_size
+
+    with tqdm(total=total_records, desc="Migrating Data") as pbar:
+        for i in range(num_batches):
+            offset = i * batch_size
+            limit = min(batch_size, total_records - offset)
+
+            click.secho(f"Fetching batch {i + 1}/{num_batches} from source database...", fg='green')
+
+            data_batch = db.session.query(AppModelConfig) \
+                .join(App, App.app_model_config_id == AppModelConfig.id) \
+                .filter(App.mode == 'completion') \
+                .filter(AppModelConfig.dataset_query_variable == None) \
+                .order_by(App.created_at) \
+                .offset(offset).limit(limit).all()
+
+            if not data_batch:
+                click.secho("No more data to migrate.", fg='green')
+                break
+
+            try:
+                click.secho(f"Migrating {len(data_batch)} records...", fg='green')
+                for data in data_batch:
+                    config = AppModelConfig.to_dict(data)
+
+                    tools = config["agent_mode"]["tools"]
+                    dataset_exists = "dataset" in str(tools)
+                    if not dataset_exists:
+                        continue
+
+                    user_input_form = config.get("user_input_form", [])
+                    for form in user_input_form:
+                        paragraph = form.get('paragraph')
+                        if paragraph \
+                                and paragraph.get('variable') == 'query':
+                            data.dataset_query_variable = 'query'
+                            break
+
+                        if paragraph \
+                                and paragraph.get('variable') == 'default_input':
+                            data.dataset_query_variable = 'default_input'
+                            break
+
+                db.session.commit()
+
+            except Exception as e:
+                click.secho(f"Error while migrating data: {e}, app_id: {data.app_id}, app_model_config_id: {data.id}",
+                            fg='red')
+                continue
+
+            click.secho(f"Successfully migrated batch {i + 1}/{num_batches}.", fg='green')
+
+            pbar.update(len(data_batch))
+
+
 def register_commands(app):
     app.cli.add_command(reset_password)
     app.cli.add_command(reset_email)
@@ -687,3 +792,5 @@ def register_commands(app):
     app.cli.add_command(update_qdrant_indexes)
     app.cli.add_command(update_app_model_configs)
     app.cli.add_command(normalization_collections)
+    app.cli.add_command(migrate_default_input_to_dataset_query_variable)
+    app.cli.add_command(add_qdrant_full_text_index)
