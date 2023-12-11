@@ -1,7 +1,7 @@
 coverage~=7.2.4
 beautifulsoup4==4.12.2
 flask~=2.3.2
-Werkzeug==2.3.6
+# Werkzeug==2.3.6
 Flask-SQLAlchemy~=3.0.3
 SQLAlchemy~=1.4.28
 flask-login==0.6.2
@@ -52,7 +52,7 @@ pandas==1.5.3
 xinference-client~=0.6.4
 safetensors==0.3.2
 zhipuai==1.0.7
-werkzeug==2.3.7
+Werkzeug==2.3.7
 pymilvus==2.3.0
 qdrant-client==1.6.4
 cohere~=4.32
