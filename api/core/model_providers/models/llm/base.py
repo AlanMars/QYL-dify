@@ -1,6 +1,3 @@
-import json
-import os
-import re
 from abc import abstractmethod
 from typing import List, Optional, Any, Union
 import decimal
@@ -15,12 +12,7 @@ from core.model_providers.models.base import BaseProviderModel
 from core.model_providers.models.entity.message import PromptMessage, MessageType, LLMRunResult, to_lc_messages
 from core.model_providers.models.entity.model_params import ModelType, ModelKwargs, ModelMode, ModelKwargsRules
 from core.model_providers.providers.base import BaseModelProvider
-from core.prompt.prompt_builder import PromptBuilder
-from core.prompt.prompt_template import JinjaPromptTemplate
 from core.third_party.langchain.llms.fake import FakeLLM
-import logging
-
-logger = logging.getLogger(__name__)
 
 logger = logging.getLogger(__name__)
 

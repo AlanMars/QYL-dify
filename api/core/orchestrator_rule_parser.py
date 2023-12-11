@@ -111,7 +111,6 @@ class OrchestratorRuleParser:
                 summary_model_instance = None
 
             tools = self.to_tools(
-                agent_model_instance=agent_model_instance,
                 tool_configs=tool_configs,
                 callbacks=[agent_callback, DifyStdOutCallbackHandler()],
                 agent_model_instance=agent_model_instance,
@@ -148,8 +147,6 @@ class OrchestratorRuleParser:
 
         :param tool_configs: app agent tool configs
         :param callbacks:
-        :param return_resource:
-        :param retriever_from:
         :return:
         """
         tools = []
