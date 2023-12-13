@@ -101,10 +101,11 @@ const translation = {
   },
   settings: {
     accountGroup: 'ACCOUNT',
-    workplaceGroup: 'WORKPLACE',
+    workplaceGroup: 'WORKSPACE',
     account: 'My account',
     members: 'Members',
-    billingCost: 'Billing & Cost',
+    billingCost: 'Billing & Cost', // RACIO
+    billing: 'Billing',
     integrations: 'Integrations',
     language: 'Language',
     provider: 'Model Provider',
