@@ -10,8 +10,76 @@ class BillingService:
     def get_info(cls, tenant_id: str):
         params = {'tenant_id': tenant_id}
 
-        billing_info = cls._send_request('GET', '/subscription/info', params=params)
+        # billing_info = cls._send_request('GET', '/subscription/info', params=params)
 
+        billing_info_sandbox = {
+            "enabled": True,
+            "subscription": {
+                "plan": "sandbox",
+                "interval": ""
+            },
+            "members": {
+                "size": 1,
+                "limit": 1
+            },
+            "apps": {
+                "size": 10,
+                "limit": 10
+            },
+            "vector_space": {
+                "size": 2.87,
+                "limit": 5
+            },
+            "docs_processing": "standard",
+            "can_replace_logo": False
+        }
+
+        billing_info_professional = {
+            "enabled": True,
+            "subscription": {
+                "plan": "professional",
+                "interval": "month"
+            },
+            "members": {
+                "size": 2,
+                "limit": 3
+            },
+            "apps": {
+                "size": 9,
+                "limit": 50
+            },
+            "vector_space": {
+                "size": 2.87,
+                "limit":200
+            },
+            "docs_processing": "standard",
+            "can_replace_logo": True
+        }
+
+        billing_info_team = {
+            "enabled": True,
+            "subscription": {
+                "plan": "team",
+                "interval": "month"
+            },
+            "members": {
+                "size": 2,
+                "limit": 1000
+            },
+            "apps": {
+                "size": 9,
+                "limit": 1000
+            },
+            "vector_space": {
+                "size": 2.87,
+                "limit":5000
+            },
+            "docs_processing": "standard",
+            "can_replace_logo": True
+        }
+
+        billing_info = billing_info_team
+        
         return billing_info
 
     @classmethod

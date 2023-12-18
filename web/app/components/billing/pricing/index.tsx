@@ -42,6 +42,7 @@ const Pricing: FC<Props> = ({
               plan={Plan.sandbox}
               planRange={planRange}
             />
+            {/* RACIO
             <PlanItem
               currentPlan={plan.type}
               plan={Plan.professional}
@@ -51,7 +52,7 @@ const Pricing: FC<Props> = ({
               currentPlan={plan.type}
               plan={Plan.team}
               planRange={planRange}
-            />
+            /> */}
             <PlanItem
               currentPlan={plan.type}
               plan={Plan.enterprise}

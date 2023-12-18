@@ -122,6 +122,7 @@ services:
       MILVUS_PASSWORD: Milvus
       # The milvus tls switch.
       MILVUS_SECURE: 'false'
+
       # Mail configuration, support: resend
       MAIL_TYPE: ''
       # default send from email address, if not specified
@@ -134,6 +135,12 @@ services:
       SENTRY_TRACES_SAMPLE_RATE: 1.0
       # The sample rate for Sentry profiles. Default: `1.0`
       SENTRY_PROFILES_SAMPLE_RATE: 1.0
+      # Billing configuration
+      BILLING_API_URL: http://127.0.0.1:8000/v1
+      # You can generate a strong key using `openssl rand -base64 42`.
+      BILLING_API_SECRET_KEY: 3psOXHA
+      
+      # RACIO AI configurations
       # USD/CNY Exchange Rate ($1.00 = ￥7.30)
       USD_CNY_EXCHANGE_RATE: 7.3
       # RMB/Power Exchange Rate (￥1.00 = ⚡️100)

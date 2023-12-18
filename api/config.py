@@ -143,12 +143,12 @@ class Config:
         self.APP_URL = get_env('APP_URL')
 
         # Has been remvoed in 0.3.32
-        self.CURRENT_VERSION = "0.3.32"
-        self.COMMIT_SHA = get_env('COMMIT_SHA')
-        self.EDITION = "SELF_HOSTED"
-        self.DEPLOY_ENV = get_env('DEPLOY_ENV')
-        self.TESTING = False
-        self.LOG_LEVEL = get_env('LOG_LEVEL')
+        # self.CURRENT_VERSION = "0.3.32"
+        # self.COMMIT_SHA = get_env('COMMIT_SHA')
+        # self.EDITION = "SELF_HOSTED"
+        # self.DEPLOY_ENV = get_env('DEPLOY_ENV')
+        # self.TESTING = False
+        # self.LOG_LEVEL = get_env('LOG_LEVEL')
         # Has been remvoed in 0.3.32
 
         # Your App secret key will be used for securely signing the session cookie

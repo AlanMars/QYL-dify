@@ -5,7 +5,7 @@ import cn from 'classnames'
 import { GoldCoin } from '../../base/icons/src/vender/solid/FinanceAndECommerce'
 import { GoldCoin as GoldCoinOutLine } from '../../base/icons/src/vender/line/financeAndECommerce'
 import AccountPage from './account-page'
-import BillingCostPage from './billing-cost-page'
+// import BillingCostPage from './billing-cost-page'
 import MembersPage from './members-page'
 import LanguagePage from './language-page'
 import PluginPage from './plugin-page'
@@ -126,12 +126,12 @@ export default function AccountSetting({
           activeIcon: <AtSign className={iconClassName} />,
         },
         */
-        {
-          key: 'billing-cost',
-          name: t('common.settings.billingCost'),
-          icon: <User01 className={iconClassName} />,
-          activeIcon: <User01Solid className={iconClassName} />,
-        },
+        // {
+        //   key: 'billing-cost',
+        //   name: t('common.settings.billingCost'),
+        //   icon: <User01 className={iconClassName} />,
+        //   activeIcon: <User01Solid className={iconClassName} />,
+        // },
         {
           key: 'language',
           name: t('common.settings.language'),
@@ -207,7 +207,7 @@ export default function AccountSetting({
           <div className='px-4 sm:px-8 pt-2'>
             {activeMenu === 'account' && <AccountPage />}
             {activeMenu === 'members' && <MembersPage />}
-            {activeMenu === 'billing-cost' && <BillingCostPage />}
+            {/* {activeMenu === 'billing-cost' && <BillingCostPage />} */}
             {activeMenu === 'billing' && <BillingPage />}
             {/* activeMenu === 'integrations' && <IntegrationsPage /> */}
             {activeMenu === 'language' && <LanguagePage />}
