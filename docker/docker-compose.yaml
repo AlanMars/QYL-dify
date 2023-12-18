@@ -136,7 +136,7 @@ services:
       # The sample rate for Sentry profiles. Default: `1.0`
       SENTRY_PROFILES_SAMPLE_RATE: 1.0
       # Billing configuration
-      BILLING_API_URL: http://127.0.0.1:8000/v1
+      BILLING_API_URL: http://localhost:5001
       # You can generate a strong key using `openssl rand -base64 42`.
       BILLING_API_SECRET_KEY: 3psOXHA
       
@@ -154,8 +154,8 @@ services:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
     # uncomment to expose dify-api port to host
-    # ports:
-    #   - "5001:5001"
+    ports:
+      - "5001:5001"
 
   # Worker service
   # The Celery worker for processing the queue.
