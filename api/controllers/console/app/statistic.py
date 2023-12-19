@@ -188,15 +188,6 @@ class DailyTokenCostStatistic(Resource):
         sql_query += ' GROUP BY date order by date'
 
         response_data = []
-
-        for i in rs:
-            response_data.append({
-                'date': str(i.date),
-                'token_count': i.token_count,
-                'total_price': i.total_price,
-                'total_power': self.getPower(i.total_price),
-                'currency': 'USD'
-            })
             
         with db.engine.begin() as conn:
             rs = conn.execute(db.text(sql_query), arg_dict)
@@ -205,6 +196,7 @@ class DailyTokenCostStatistic(Resource):
                     'date': str(i.date),
                     'token_count': i.token_count,
                     'total_price': i.total_price,
+                    'total_power': self.getPower(i.total_price),
                     'currency': 'USD'
                 })
 
