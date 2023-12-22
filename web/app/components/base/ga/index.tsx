@@ -1,6 +1,5 @@
 import type { FC } from 'react'
 import React from 'react'
-import Script from 'next/script'
 import { IS_CE_EDITION } from '@/config'
 
 export enum GaType {
@@ -25,7 +24,7 @@ const GA: FC<IGAProps> = ({
 
   return (
     <>
-      <Script strategy="beforeInteractive" async src={`https://www.googletagmanager.com/gtag/js?id=${gaIdMaps[gaType]}`}></Script>
+      {/* <Script strategy="beforeInteractive" async src={`https://www.googletagmanager.com/gtag/js?id=${gaIdMaps[gaType]}`}></Script>
       <Script
         id="ga-init"
         dangerouslySetInnerHTML={{
@@ -37,7 +36,7 @@ gtag('config', '${gaIdMaps[gaType]}');
           `,
         }}
       >
-      </Script>
+      </Script> */}
 
     </>
 
