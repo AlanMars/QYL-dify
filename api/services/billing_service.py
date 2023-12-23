@@ -3,6 +3,8 @@ import requests
 import logging
 from flask_login import current_user
 from flask_restful import fields, marshal
+from extensions.ext_database import db
+from models.account import TenantAccountJoin
 
 logger = logging.getLogger(__name__)
 
@@ -150,3 +152,15 @@ class BillingService:
         response = requests.request(method, url, json=json, params=params, headers=headers)
 
         return response.json()
+
+    @staticmethod
+    def is_tenant_owner(current_user):
+        tenant_id = current_user.current_tenant_id
+
+        join = db.session.query(TenantAccountJoin).filter(
+            TenantAccountJoin.tenant_id == tenant_id,
+            TenantAccountJoin.account_id == current_user.id
+        ).first()
+
+        if join.role != 'owner':
+            raise ValueError('Only tenant owner can perform this action')

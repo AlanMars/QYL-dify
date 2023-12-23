@@ -2,21 +2,15 @@ version: '3.1'
 services:
   # API service
   api:
-    #image: langgenius/dify-api:0.3.33
-    image: dify-api-qyl-b22:0.3.33
+    image: langgenius/dify-api:0.3.34
     restart: always
     environment:
       # Startup mode, 'api' starts the API server.
       MODE: api
-      # Deployment version, SELF_HOSTED (only supports single team/tenant mode) or CLOUD (supports multi-team/tenant mode)
-      EDITION: CLOUD
-
       # The log level for the application. Supported values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
       LOG_LEVEL: INFO
       # A secret key that is used for securely signing the session cookie and encrypting sensitive information on the database. You can generate a strong key using `openssl rand -base64 42`.
       SECRET_KEY: sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
-      # Authenticated for admin API call. You can generate a strong key using `openssl rand -base64 256`
-      ADMIN_API_KEY: Hq5L16r+4A==
       # The base URL of console application web frontend, refers to the Console base URL of WEB service if console domain is
       # different from api or web app domain.
       # example: http://cloud.dify.ai
@@ -28,7 +22,7 @@ services:
       # The URL prefix for Service API endpoints, refers to the base URL of the current API service if api domain is
       # different from console domain.
       # example: http://api.dify.ai
-      SERVICE_API_URL: 'https://kb.racio.ai'
+      SERVICE_API_URL: ''
       # The URL prefix for Web APP api server, refers to the Web App base URL of WEB service if web app domain is different from
       # console or api domain.
       # example: http://udify.app
@@ -36,7 +30,7 @@ services:
       # The URL prefix for Web APP frontend, refers to the Web App base URL of WEB service if web app domain is different from
       # console or api domain.
       # example: http://udify.app
-      APP_WEB_URL: 'https://kb.racio.ai'
+      APP_WEB_URL: ''
       # File preview or download Url prefix.
       # used to display File preview or download Url to the front-end or as Multi-model inputs;
       # Url is signed and has expiration time.
@@ -59,15 +53,6 @@ services:
       REDIS_USE_SSL: 'false'
       # use redis db 0 for redis cache
       REDIS_DB: 0
-      # The configurations of session, Supported values are `sqlalchemy`. `redis`
-      SESSION_TYPE: redis
-      SESSION_REDIS_HOST: redis
-      SESSION_REDIS_PORT: 6379
-      SESSION_REDIS_USERNAME: ''
-      SESSION_REDIS_PASSWORD: difyai123456
-      SESSION_REDIS_USE_SSL: 'false'
-      # use redis db 2 for session store
-      SESSION_REDIS_DB: 2
       # The configurations of celery broker.
       # Use redis as the broker, and redis db 1 for celery broker.
       CELERY_BROKER_URL: redis://:difyai123456@redis:6379/1
@@ -86,10 +71,6 @@ services:
       # If you want to enable cross-origin support,
       # you must use the HTTPS protocol and set the configuration to `SameSite=None, Secure=true, HttpOnly=true`.
       #
-      # For **production** purposes, please set `SameSite=Lax, Secure=true, HttpOnly=true`.
-      COOKIE_HTTPONLY: 'true'
-      COOKIE_SAMESITE: 'None' # 'Lax'
-      COOKIE_SECURE: 'true'
       # The type of storage to use for storing user files. Supported values are `local` and `s3`, Default: `local`
       STORAGE_TYPE: local
       # The path to the local storage directory, the directory relative the root path of API service codes or absolute path. Default: `storage` or `/home/john/storage`.
@@ -122,7 +103,6 @@ services:
       MILVUS_PASSWORD: Milvus
       # The milvus tls switch.
       MILVUS_SECURE: 'false'
-
       # Mail configuration, support: resend
       MAIL_TYPE: ''
       # default send from email address, if not specified
@@ -135,18 +115,6 @@ services:
       SENTRY_TRACES_SAMPLE_RATE: 1.0
       # The sample rate for Sentry profiles. Default: `1.0`
       SENTRY_PROFILES_SAMPLE_RATE: 1.0
-      # Billing configuration
-      BILLING_API_URL: http://localhost:5001
-      # You can generate a strong key using `openssl rand -base64 42`.
-      BILLING_API_SECRET_KEY: 3psOXHA
-      
-      # RACIO AI configurations
-      # USD/CNY Exchange Rate ($1.00 = ￥7.30)
-      USD_CNY_EXCHANGE_RATE: 7.3
-      # RMB/Power Exchange Rate (￥1.00 = ⚡️100)
-      CNY_POWER_EXCHANGE_RATE: 100
-      # Workspace Premium Rate
-      WORKSPACE_PREMIUM_RATE_DEFAULT: 1.0
     depends_on:
       - db
       - redis
@@ -154,14 +122,13 @@ services:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
     # uncomment to expose dify-api port to host
-    ports:
-      - "5001:5001"
+    # ports:
+    #   - "5001:5001"
 
-  # Worker service
+  # worker service
   # The Celery worker for processing the queue.
   worker:
-    #image: langgenius/dify-api:0.3.33
-    image: dify-api-qyl-b22:0.3.33
+    image: langgenius/dify-api:0.3.34
     restart: always
     environment:
       # Startup mode, 'worker' starts the Celery worker for processing the queue.
@@ -169,8 +136,6 @@ services:
 
       # --- All the configurations below are the same as those in the 'api' service. ---
 
-      # Deployment version, SELF_HOSTED (only supports single team/tenant mode) or CLOUD (supports multi-team/tenant mode)
-      EDITION: CLOUD
       # The log level for the application. Supported values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
       LOG_LEVEL: INFO
       # A secret key that is used for securely signing the session cookie and encrypting sensitive information on the database. You can generate a strong key using `openssl rand -base64 42`.
@@ -231,12 +196,10 @@ services:
 
   # Frontend web application.
   web:
-    #image: langgenius/dify-web:0.3.33
-    image: dify-web-qyl-b22:0.3.33
+    image: langgenius/dify-web:0.3.34
     restart: always
     environment:
-      # Deployment version: SELF_HOSTED, CLOUD
-      EDITION: CLOUD
+      EDITION: SELF_HOSTED
       # The base URL of console application api server, refers to the Console base URL of WEB service if console domain is
       # different from api or web app domain.
       # example: http://cloud.dify.ai
@@ -272,20 +235,6 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
-  
-  # The postgres admin.
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
-      PGADMIN_DEFAULT_PASSWORD: UT5SS+9C
-    volumes:
-      - ./volumes/db/pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    depends_on:
-      - db
 
   # The redis cache.
   redis:
@@ -341,34 +290,16 @@ services:
   #   # ports:
   #   #  - "6333:6333"
 
-  # Monitor service - monitoring celery
-  # The real-time web based monitor and administration tool for Celery
-  flower:
-    image: mher/flower:2.0.0
-    restart: always
-    volumes:
-      # Mount the flower data directory to the container.
-      - ./volumes/flower/data:/data
-    command: celery flower --persisten=True
-    environment:
-      CELERY_BROKER_URL: redis://:difyai123456@redis:6379/1
-      FLOWER_PORT: 5555
-    ports:
-      - "5555:5555"
-
   # The nginx reverse proxy.
   # used for reverse proxying the API service and Web service.
   nginx:
     image: nginx:latest
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/proxy.conf:/etc/nginx/proxy.conf
-      - ./nginx/cert.pem:/etc/nginx/cert.pem 
-      - ./nginx/key.pem:/etc/nginx/key.pem
+      - ./nginx/conf.d:/etc/nginx/conf.d
     depends_on:
       - api
       - web
     ports:
       - "80:80"
-      - "443:443"
