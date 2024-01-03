@@ -97,10 +97,11 @@ function AppCard({
         return () => {
           window.open(appUrl, '_blank')
         }
-      case t('appOverview.overview.appInfo.customize.entry'):
-        return () => {
-          setShowCustomizeModal(true)
-        }
+      // RACIO
+      // case t('appOverview.overview.appInfo.customize.entry'):
+      //   return () => {
+      //     setShowCustomizeModal(true)
+      //   }
       case t('appOverview.overview.appInfo.settings.entry'):
         return () => {
           setShowSettingsModal(true)

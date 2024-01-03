@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next'
 import { Webhooks } from '@/app/components/base/icons/src/vender/line/development'
-import { BookOpen01 } from '@/app/components/base/icons/src/vender/line/education'
 
 const Empty = () => {
   const { t } = useTranslation()
@@ -11,6 +10,7 @@ const Empty = () => {
         <Webhooks className='w-6 h-6 text-gray-500' />
       </div>
       <div className='mb-2 text-sm text-gray-600'>{t('common.apiBasedExtension.title')}</div>
+      {/* RACIO
       <a
         className='flex items-center mb-2 h-[18px] text-xs text-primary-600'
         href={t('common.apiBasedExtension.linkUrl') || '/'}
@@ -18,7 +18,7 @@ const Empty = () => {
       >
         <BookOpen01 className='mr-1 w-3 h-3' />
         {t('common.apiBasedExtension.link')}
-      </a>
+      </a> */}
     </div>
   )
 }

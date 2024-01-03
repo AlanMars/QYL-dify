@@ -17,13 +17,14 @@ const AdvancedModeWarning: FC = () => {
       <div className='flex justify-between items-center'>
         <div className='text-xs leading-[18px] '>
           <span className='text-gray-700'>{t('appDebug.promptMode.advancedWarning.description')}</span>
+          {/* RACIO
           <a
             className='font-medium text-[#155EEF]'
             href={`https://docs.dify.ai/${locale === 'zh-Hans' ? 'v/zh-hans/' : ''}advanced/prompt-engineering`}
             target='_blank'
           >
             {t('appDebug.promptMode.advancedWarning.learnMore')}
-          </a>
+          </a> */}
         </div>
 
         <div
