@@ -91,10 +91,11 @@ const ModelPage = () => {
       config.tongyi,
       config.wenxin,
       config.jina,
-      config.chatglm,
-      config.xinference,
-      config.openllm,
-      config.localai,
+      // RACIO
+      // config.chatglm,
+      // config.xinference,
+      // config.openllm,
+      // config.localai,
     ]
   }
 
