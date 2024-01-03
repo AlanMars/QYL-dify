@@ -359,7 +359,7 @@ const Welcome: FC<IWelcomeProps> = ({
               customConfig?.remove_webapp_brand
                 ? null
                 : (
-                  <a className='flex items-center pr-3 space-x-3' href="https://racio.ai/" target="_blank">
+                  <a className='flex items-center pr-3 space-x-3' href="https://racio-ai.feishu.cn/wiki/S7r3wc24Pi9pKYkbNlAcDL5Lneg" target="_blank">
                     <span className='uppercase'>{t('share.chat.powerBy')}</span>
                     {
                       customConfig?.replace_webapp_logo
