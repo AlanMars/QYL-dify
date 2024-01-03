@@ -4,11 +4,8 @@ import { useTranslation } from 'react-i18next'
 import { useContext } from 'use-context-selector'
 import type { ProviderConfigItem, TypeWithI18N } from '../declarations'
 import { ProviderEnum as ProviderEnumValue } from '../declarations'
-import s from './index.module.css'
 import I18n from '@/context/i18n'
-import Button from '@/app/components/base/button'
 import { submitFreeQuota } from '@/service/common'
-import { LinkExternal01 } from '@/app/components/base/icons/src/vender/line/general'
 
 const TIP_MAP: { [k: string]: TypeWithI18N } = {
   [ProviderEnumValue.minimax]: {
@@ -53,7 +50,7 @@ const FreeQuota: FC<FreeQuotaProps> = ({
 
   return (
     <div className='flex items-center'>
-      📣
+      {/* RACIO 📣
       <div className={`${s.vender} ml-1 text-xs font-medium text-transparent`}>{TIP_MAP[modelItem.key][locale]}</div>
       <div className='mx-1 text-xs font-medium text-gray-400'>·</div>
       <a
@@ -70,7 +67,7 @@ const FreeQuota: FC<FreeQuotaProps> = ({
         disabled={loading}
       >
         {t('common.operation.getForFree')}
-      </Button>
+      </Button> */}
       <div className='mx-2 w-[1px] h-4 bg-black/5' />
     </div>
   )
