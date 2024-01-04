@@ -40,6 +40,7 @@ COPY --from=builder /app/web/.next/static ./.next/static
 
 
 COPY docker/entrypoint.sh ./entrypoint.sh
+RUN sed -i "s/\r$//" ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
 ARG COMMIT_SHA
